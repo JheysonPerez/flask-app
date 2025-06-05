@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Comprobante de Compra{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Comprobante de {{ datos.tipo_comprobante|capitalize }}</h2>
+
+    {% if datos.tipo_comprobante == 'boleta' %}
+        <p><strong>Tipo:</strong> Boleta de venta</p>
+        <p>Gracias por tu compra. Aquí tienes el detalle de tu boleta.</p>
+        <!-- Muestra datos relevantes de boleta -->
+        <p><strong>Total:</strong> S/. {{ datos.total or '0.00' }}</p>
+
+    {% elif datos.tipo_comprobante == 'factura' %}
+        <p><strong>Tipo:</strong> Factura</p>
+        <p><strong>RUC:</strong> {{ datos.ruc }}</p>
+        <p><strong>Razón Social:</strong> {{ datos.razon_social or 'No disponible' }}</p>
+        <p><strong>Dirección:</strong> {{ datos.direccion or 'No disponible' }}</p>
+        <!-- Muestra detalles de la factura -->
+        <p><strong>Total:</strong> S/. {{ datos.total or '0.00' }}</p>
+
+    {% else %}
+        <p>Tipo de comprobante no válido.</p>
+    {% endif %}
+
+    <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-primary mt-3">Seguir comprando</a>
+</div>
+{% endblock %}

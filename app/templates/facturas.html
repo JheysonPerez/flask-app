@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de Factura{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Detalle de Factura #{{ compra.id }}</h1>
+    <!-- Botón para generar PDF -->
+    <a href="{{ url_for('compra.compra_pdf', id=compra.id) }}" class="btn btn-danger" target="_blank" title="Generar PDF">
+      <i class="bi bi-file-earmark-pdf"></i> Generar PDF
+    </a>
+  </div>
+
+  <ul class="list-group mb-3">
+    <li class="list-group-item"><strong>ID Compra:</strong> {{ compra.id }}</li>
+    <li class="list-group-item"><strong>Tipo Comprobante:</strong> {{ compra.tipo_comprobante.nombre if compra.tipo_comprobante else 'N/A' }}</li>
+    <li class="list-group-item"><strong>RUC:</strong> {{ compra.ruc or 'N/A' }}</li>
+    <li class="list-group-item"><strong>Email Destino:</strong> {{ compra.email_destino or current_user.email }}</li>
+    <li class="list-group-item"><strong>Total:</strong> S/. {{ "%.2f"|format(compra.total) if compra.total else 'N/A' }}</li>
+    <li class="list-group-item"><strong>Fecha:</strong> {{ compra.fecha.strftime('%Y-%m-%d %H:%M') if compra.fecha else 'N/A' }}</li>
+  </ul>
+
+  <h5 class="mt-4">Productos</h5>
+  {% if compra.productos %}
+    <ul class="list-group mb-3">
+      {% for detalle in compra.productos %}
+      <li class="list-group-item">
+        <strong>Nombre:</strong> {{ detalle.producto.nombre if detalle.producto else 'N/A' }}<br>
+        <strong>Marca:</strong> {{ detalle.producto.marca if detalle.producto and detalle.producto.marca else 'N/A' }}<br>
+        <strong>Cantidad:</strong> {{ detalle.cantidad or 'N/A' }}<br>
+        <strong>Precio Unitario:</strong>
+        {% if detalle.cantidad and detalle.producto and detalle.producto.precio %}
+          S/. {{ "%.2f"|format(detalle.producto.precio) }}
+        {% else %}
+          N/A
+        {% endif %}<br>
+        <strong>Subtotal:</strong>
+        {% if detalle.cantidad and detalle.producto and detalle.producto.precio %}
+          S/. {{ "%.2f"|format(detalle.cantidad * detalle.producto.precio) }}
+        {% else %}
+          N/A
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay productos asociados a esta factura.</p>
+  {% endif %}
+</div>
+{% endblock %}

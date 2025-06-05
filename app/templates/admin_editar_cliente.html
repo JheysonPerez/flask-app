@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h2>Editar Cliente</h2>
+    <form method="post">
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" value="{{ cliente.nombre }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <input type="email" name="email" class="form-control" value="{{ cliente.email }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Estado</label>
+            <select name="estado" class="form-select">
+                <option value="activo" {% if cliente.estado == "activo" %}selected{% endif %}>Activo</option>
+                <option value="inactivo" {% if cliente.estado == "inactivo" %}selected{% endif %}>Inactivo</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a href="{{ url_for('bp_admin.listar_clientes') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Productos{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{{ url_for('cliente_dashboard') }}" class="btn btn-secondary">Volver al Inicio</a>
+        <a href="{{ url_for('producto.ver_carrito') }}" class="btn btn-warning">🛒 Ver Estante Virtual</a>
+    </div>
+
+    <h2>Mis Productos</h2>
+
+    <!-- Formulario de Filtro -->
+    <form method="get" action="{{ url_for('producto.filtro_productos') }}" class="mb-4">
+        <div class="row mb-2">
+            <div class="col-md-12 mb-2">
+                <label class="form-label">Selecciona criterios de filtrado:</label><br>
+
+                <!-- Nombre -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkNombre" onclick="toggleInput('nombre')">
+                    <label class="form-check-label" for="chkNombre">Nombre</label>
+                </div>
+
+                <!-- Marca -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkMarca" onclick="toggleInput('marca')">
+                    <label class="form-check-label" for="chkMarca">Marca</label>
+                </div>
+
+                <!-- Categoría -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkCategoria" onclick="toggleInput('categoria')">
+                    <label class="form-check-label" for="chkCategoria">Categoría</label>
+                </div>
+
+                <!-- Orden por Stock -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkStock" onclick="toggleInput('stock')">
+                    <label class="form-check-label" for="chkStock">Ordenar por stock</label>
+                </div>
+
+                <!-- Rango de Precios -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="chkPrecio" onclick="toggleInput('precio')">
+                    <label class="form-check-label" for="chkPrecio">Rango de precios</label>
+                </div>
+            </div>
+
+            <div class="col-md-3" id="filtro-nombre" style="display: none;">
+                <input type="text" name="nombre" class="form-control" placeholder="Nombre" value="{{ request.args.get('nombre', '') }}">
+            </div>
+            <div class="col-md-3" id="filtro-marca" style="display: none;">
+                <input type="text" name="marca" class="form-control" placeholder="Marca" value="{{ request.args.get('marca', '') }}">
+            </div>
+            <div class="col-md-3" id="filtro-categoria" style="display: none;">
+                <input type="text" name="categoria" class="form-control" placeholder="Categoría" value="{{ request.args.get('categoria', '') }}">
+            </div>
+            <div class="col-md-3" id="filtro-stock" style="display: none;">
+                <select name="orden_stock" class="form-control">
+                    <option value="">-- Ordenar por stock --</option>
+                    <option value="asc" {% if request.args.get('orden_stock') == 'asc' %}selected{% endif %}>Stock ascendente</option>
+                    <option value="desc" {% if request.args.get('orden_stock') == 'desc' %}selected{% endif %}>Stock descendente</option>
+                </select>
+            </div>
+            <div class="col-md-6" id="filtro-precio" style="display: none;">
+                <div class="d-flex">
+                    <input type="number" step="0.01" name="precio_min" class="form-control me-2" placeholder="Precio mínimo" value="{{ request.args.get('precio_min', '') }}">
+                    <input type="number" step="0.01" name="precio_max" class="form-control" placeholder="Precio máximo" value="{{ request.args.get('precio_max', '') }}">
+                </div>
+            </div>
+
+            <div class="col-md-12 text-end mt-3">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ url_for('producto.filtro_productos') }}" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tarjetas de productos -->
+    <div class="row">
+        {% for producto in productos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if producto.imagen_url %}
+                <img src="{{ url_for('static', filename='uploads/' + producto.imagen_url) }}" 
+                     class="card-img-top img-fluid mx-auto d-block"
+                     style="object-fit: cover; height: 200px; width: 100%;"
+                     alt="{{ producto.nombre }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='default.png') }}" 
+                     class="card-img-top img-fluid mx-auto d-block"
+                     style="object-fit: cover; height: 200px; width: 100%;"
+                     alt="Sin imagen">
+                {% endif %}
+                <div class="card-body">
+                    <p><strong>Nombre:</strong> {{ producto.nombre }}</p>
+                    <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+                    <p><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
+                    <p><strong>Marca:</strong> {{ producto.marca }}</p> 
+                    <p><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    <p><strong>Stock:</strong> {{ producto.stock }}</p>
+
+                    {% if producto.stock <= 5 and producto.stock > 0 %}
+                        <p class="text-danger fw-bold">⚠ Stock casi vacío</p>
+                    {% elif producto.stock == 0 %}
+                        <p class="text-danger fw-bold">❌ Sin stock</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('producto.obtener_producto', producto_id=producto.id) }}" class="btn btn-primary btn-sm">Ver más detalles</a>
+                        <form action="{{ url_for('producto.agregar_al_carrito', producto_id=producto.id) }}" method="post" class="mb-0">
+                            <button type="submit" class="btn btn-success btn-sm" {% if producto.stock <= 0 %}disabled{% endif %}>
+                                Agregar al estante virtual
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p>No tienes productos aún.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Script para mostrar u ocultar filtros -->
+<script>
+    function toggleInput(tipo) {
+        const filtro = document.getElementById('filtro-' + tipo);
+        const checkbox = document.getElementById('chk' + tipo.charAt(0).toUpperCase() + tipo.slice(1));
+        filtro.style.display = checkbox.checked ? 'block' : 'none';
+    }
+
+    window.onload = function () {
+        ['nombre', 'marca', 'categoria', 'stock', 'precio'].forEach(function(tipo) {
+            const input = document.querySelector(`[name="${tipo}"]`) ||
+                          document.querySelector(`[name="${tipo}_min"]`) ||
+                          document.querySelector(`[name="orden_stock"]`);
+            if (input && input.value) {
+                const checkbox = document.getElementById('chk' + tipo.charAt(0).toUpperCase() + tipo.slice(1));
+                checkbox.checked = true;
+                toggleInput(tipo);
+            }
+        });
+    }
+</script>
+
+{% endblock %}

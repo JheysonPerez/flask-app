@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Nuevo Cliente{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Nuevo Cliente</h2>
+    <form method="post">
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required maxlength="100">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo electrónico</label>
+            <input type="email" id="email" name="email" class="form-control" required maxlength="120">
+        </div>
+        <!-- Estado por defecto activo -->
+        <input type="hidden" name="estado" value="activo">
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('bp_admin.listar_clientes') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

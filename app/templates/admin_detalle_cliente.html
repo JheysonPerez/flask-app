@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Detalle Cliente{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h2>Detalle del Cliente</h2>
+    <ul class="list-group">
+        <li class="list-group-item"><strong>ID:</strong> {{ cliente.id }}</li>
+        <li class="list-group-item"><strong>Nombre:</strong> {{ cliente.nombre }}</li>
+        <li class="list-group-item"><strong>Email:</strong> {{ cliente.email }}</li>
+        <li class="list-group-item"><strong>Estado:</strong> {{ cliente.estado }}</li>
+    </ul>
+    <a href="{{ url_for('bp_admin.listar_clientes') }}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

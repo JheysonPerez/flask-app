@@ -1,0 +1,15 @@
+flask
+flask_sqlalchemy
+flask_jwt_extended
+flask_mail
+pika
+requests
+psycopg2-binary<3.0,>=2.9
+python-dotenv
+flask-dance
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+flask-login
+weasyprint
+pytz
