@@ -41,7 +41,7 @@ def create_app(testing=False):
             SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'clave_de_desarrollo')
         )
 
-    # Configuración de cookies para producción (para OAuth cross-site)
+    # Configuración de cookies para producción (OAuth cross-site)
     if os.getenv("FLASK_ENV") == "production":
         app.config['SESSION_COOKIE_SECURE'] = True
         app.config['SESSION_COOKIE_SAMESITE'] = 'None'
@@ -77,8 +77,8 @@ def create_app(testing=False):
 
     @app.route('/perfil')
     def perfil():
-        # Verificar login con Google
         if not testing:
+            # Verificar si hay token de Google en sesión
             if not google.authorized or 'google_oauth_token' not in session:
                 return redirect(url_for("google.login"))
 
@@ -88,12 +88,8 @@ def create_app(testing=False):
                 info = resp.json()
 
                 email = info.get("email")
-                nombre = info.get("name")
                 google_id = info.get("sub")
                 imagen = info.get("picture")
-
-                # Guardar token en sesión
-                session['google_oauth_token'] = google.token
 
                 usuario_db = Usuario.query.filter_by(email=email).first()
                 if not usuario_db:
@@ -104,8 +100,11 @@ def create_app(testing=False):
                     usuario_db.google_id = google_id
                     db.session.commit()
 
-                session['imagen_perfil'] = imagen
+                # Login y sesión
                 login_user(usuario_db)
+                session['google_oauth_token'] = google.token
+                session['imagen_perfil'] = imagen
+                session.modified = True  # ⚡ clave para que la cookie se guarde
 
                 # Redirigir según rol
                 if usuario_db.rol == 'administrador':
