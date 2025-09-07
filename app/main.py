@@ -11,6 +11,7 @@ from app.routes.categoria import bp_categoria
 load_dotenv()
 
 login_manager = LoginManager()
+login_manager.login_view = "index"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -53,11 +54,9 @@ def create_app(testing=False):
 
     # Configuración Google OAuth
     if not testing:
-        # Permitir HTTP inseguro solo en desarrollo
         if os.getenv("FLASK_ENV") == "development":
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-        # Crear blueprint de Google OAuth
         google_bp = make_google_blueprint(
             client_id=os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
             client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -66,20 +65,21 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
-            redirect_to="perfil",  # nombre de la función Flask a redirigir después del login
+            redirect_to="perfil",
             offline=True
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
-    # Rutas principales
+    # Rutas
     @app.route('/')
     def index():
         return render_template('login.html')
 
     @app.route('/perfil')
+    @login_required
     def perfil():
         if not testing:
-            if not google.authorized:
+            if not google.authorized or 'google_oauth_token' not in session:
                 return redirect(url_for("google.login"))
 
             try:
