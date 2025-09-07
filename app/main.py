@@ -44,7 +44,7 @@ def create_app(testing=False):
     # Configuración de cookies para producción
     if os.getenv("FLASK_ENV") == "production":
         app.config['SESSION_COOKIE_SECURE'] = True
-        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+        app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # importante para OAuth cross-site
 
     # Inicializar extensiones
     db.init_app(app)
@@ -76,8 +76,8 @@ def create_app(testing=False):
         return render_template('login.html')
 
     @app.route('/perfil')
-    @login_required
     def perfil():
+        # Verificar login con Google
         if not testing:
             if not google.authorized or 'google_oauth_token' not in session:
                 return redirect(url_for("google.login"))
@@ -92,7 +92,6 @@ def create_app(testing=False):
                 google_id = info.get("sub")
                 imagen = info.get("picture")
 
-                # Guardar token en sesión
                 session['google_oauth_token'] = google.token
 
                 usuario_db = Usuario.query.filter_by(email=email).first()
