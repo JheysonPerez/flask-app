@@ -3,7 +3,6 @@ from flask import Flask, redirect, url_for, render_template, session, flash
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_dance.contrib.google import make_google_blueprint, google
-
 from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
@@ -20,7 +19,6 @@ def load_user(user_id):
 def create_app(testing=False):
     app = Flask(__name__)
 
-    # Configuración básica
     if testing:
         app.config.update(
             SQLALCHEMY_DATABASE_URI="sqlite:///test.db?check_same_thread=False",
@@ -41,18 +39,15 @@ def create_app(testing=False):
             SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'clave_de_desarrollo')
         )
 
-    # Configuración de cookies para producción (OAuth cross-site)
     if os.getenv("FLASK_ENV") == "production":
         app.config['SESSION_COOKIE_SECURE'] = True
         app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
-    # Inicializar extensiones
     db.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
 
-    # Configuración Google OAuth
     if not testing:
         if os.getenv("FLASK_ENV") == "development":
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -70,52 +65,53 @@ def create_app(testing=False):
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
-    # Rutas
     @app.route('/')
     def index():
+        if current_user.is_authenticated:
+            if current_user.rol == 'administrador':
+                return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('cliente_dashboard'))
         return render_template('login.html')
 
     @app.route('/perfil')
     def perfil():
-        if not testing:
-            # Verificar si hay token de Google en sesión
-            if not google.authorized or 'google_oauth_token' not in session:
-                return redirect(url_for("google.login"))
+        if current_user.is_authenticated:
+            if current_user.rol == 'administrador':
+                return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('cliente_dashboard'))
 
-            try:
-                resp = google.get("/oauth2/v3/userinfo")
-                resp.raise_for_status()
-                info = resp.json()
+        if not testing and (not google.authorized or 'google_oauth_token' not in session):
+            return redirect(url_for("google.login"))
 
-                email = info.get("email")
-                google_id = info.get("sub")
-                imagen = info.get("picture")
+        try:
+            resp = google.get("/oauth2/v3/userinfo")
+            resp.raise_for_status()
+            info = resp.json()
 
-                usuario_db = Usuario.query.filter_by(email=email).first()
-                if not usuario_db:
-                    flash("Usuario no registrado.", "error")
-                    return redirect(url_for('index'))
+            email = info.get("email")
+            google_id = info.get("sub")
+            imagen = info.get("picture")
 
-                if not usuario_db.google_id:
-                    usuario_db.google_id = google_id
-                    db.session.commit()
-
-                # Login y sesión
-                login_user(usuario_db)
-                session['google_oauth_token'] = google.token
-                session['imagen_perfil'] = imagen
-                session.modified = True  # ⚡ clave para que la cookie se guarde
-
-                # Redirigir según rol
-                if usuario_db.rol == 'administrador':
-                    return redirect(url_for('admin_dashboard'))
-                else:
-                    return redirect(url_for('cliente_dashboard'))
-
-            except Exception as e:
-                flash("Error al autenticar con Google: " + str(e), "error")
+            usuario_db = Usuario.query.filter_by(email=email).first()
+            if not usuario_db:
+                flash("Usuario no registrado.", "error")
                 return redirect(url_for('index'))
-        else:
+
+            if not usuario_db.google_id:
+                usuario_db.google_id = google_id
+                db.session.commit()
+
+            login_user(usuario_db)
+            session['google_oauth_token'] = google.token
+            session['imagen_perfil'] = imagen
+            session.modified = True
+
+            if usuario_db.rol == 'administrador':
+                return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('cliente_dashboard'))
+
+        except Exception as e:
+            flash("Error al autenticar con Google: " + str(e), "error")
             return redirect(url_for('index'))
 
     @app.route('/admin/dashboard')
@@ -144,7 +140,6 @@ def create_app(testing=False):
         session.clear()
         return redirect(url_for('index'))
 
-    # Registrar blueprints
     from app.routes.admin import bp_admin
     from app.routes.cliente import bp_cliente
     from app.routes.auth import auth_bp
@@ -169,7 +164,6 @@ def create_app(testing=False):
 
     return app
 
-# Ejecutar app
 app = create_app()
 
 if __name__ == '__main__':
