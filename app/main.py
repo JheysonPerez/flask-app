@@ -41,10 +41,10 @@ def create_app(testing=False):
             SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'clave_de_desarrollo')
         )
 
-    # Configuración de cookies para producción
+    # Configuración de cookies para producción (para OAuth cross-site)
     if os.getenv("FLASK_ENV") == "production":
         app.config['SESSION_COOKIE_SECURE'] = True
-        app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # importante para OAuth cross-site
+        app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
     # Inicializar extensiones
     db.init_app(app)
@@ -92,6 +92,7 @@ def create_app(testing=False):
                 google_id = info.get("sub")
                 imagen = info.get("picture")
 
+                # Guardar token en sesión
                 session['google_oauth_token'] = google.token
 
                 usuario_db = Usuario.query.filter_by(email=email).first()
@@ -106,6 +107,7 @@ def create_app(testing=False):
                 session['imagen_perfil'] = imagen
                 login_user(usuario_db)
 
+                # Redirigir según rol
                 if usuario_db.rol == 'administrador':
                     return redirect(url_for('admin_dashboard'))
                 else:
