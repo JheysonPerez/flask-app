@@ -42,6 +42,7 @@ def create_app(testing=False):
     if os.getenv("FLASK_ENV") == "production":
         app.config['SESSION_COOKIE_SECURE'] = True
         app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+        app.config['SESSION_COOKIE_HTTPONLY'] = True
 
     db.init_app(app)
     jwt.init_app(app)
@@ -68,22 +69,27 @@ def create_app(testing=False):
     @app.route('/')
     def index():
         if current_user.is_authenticated:
+            app.logger.debug(f"Usuario autenticado: {current_user.email}, rol: {current_user.rol}")
             if current_user.rol == 'administrador':
                 return redirect(url_for('admin_dashboard'))
             return redirect(url_for('cliente_dashboard'))
+        app.logger.debug("Usuario no autenticado, renderizando login.html")
         return render_template('login.html')
 
     @app.route('/perfil')
     def perfil():
         if current_user.is_authenticated:
+            app.logger.debug(f"Usuario ya autenticado en /perfil: {current_user.email}")
             if current_user.rol == 'administrador':
                 return redirect(url_for('admin_dashboard'))
             return redirect(url_for('cliente_dashboard'))
 
         if not testing and (not google.authorized or 'google_oauth_token' not in session):
+            app.logger.debug("No hay token de Google, redirigiendo a google.login")
             return redirect(url_for("google.login"))
 
         try:
+            app.logger.debug("Obteniendo información de usuario desde Google")
             resp = google.get("/oauth2/v3/userinfo")
             resp.raise_for_status()
             info = resp.json()
@@ -92,26 +98,31 @@ def create_app(testing=False):
             google_id = info.get("sub")
             imagen = info.get("picture")
 
+            app.logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
             usuario_db = Usuario.query.filter_by(email=email).first()
             if not usuario_db:
+                app.logger.debug("Usuario no registrado en la base de datos")
                 flash("Usuario no registrado.", "error")
                 return redirect(url_for('index'))
 
             if not usuario_db.google_id:
+                app.logger.debug("Asignando google_id al usuario")
                 usuario_db.google_id = google_id
                 db.session.commit()
 
-            login_user(usuario_db)
+            login_user(usuario_db, remember=True)
             session['google_oauth_token'] = google.token
             session['imagen_perfil'] = imagen
             session.modified = True
+            app.logger.debug(f"Usuario logueado: {usuario_db.email}, token guardado")
 
             if usuario_db.rol == 'administrador':
                 return redirect(url_for('admin_dashboard'))
             return redirect(url_for('cliente_dashboard'))
 
         except Exception as e:
-            flash("Error al autenticar con Google: " + str(e), "error")
+            app.logger.error(f"Error al autenticar con Google: {str(e)}")
+            flash(f"Error al autenticar con Google: {str(e)}", "error")
             return redirect(url_for('index'))
 
     @app.route('/admin/dashboard')
