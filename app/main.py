@@ -9,7 +9,6 @@ from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 
 load_dotenv()
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 login_manager = LoginManager()
 
@@ -46,8 +45,18 @@ def create_app(testing=False):
     mail.init_app(app)
     login_manager.init_app(app)
 
-    # Login con Google (solo en modo normal)
+    # Configuración de Google OAuth
     if not testing:
+        # Solo permitir transporte inseguro en desarrollo local
+        if os.getenv("FLASK_ENV") == "development":
+            os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+        # Definir redirect_uri según entorno
+        redirect_uri = "/login/google/authorized"
+        if os.getenv("FLASK_ENV") == "production":
+            redirect_uri = "https://flask-app-1-tmtb.onrender.com/login/google/authorized"
+
+        # Crear blueprint de Google OAuth
         google_bp = make_google_blueprint(
             client_id=os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
             client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -56,12 +65,11 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
-            redirect_url="/login/google/authorized"
-        )  
+            redirect_url=redirect_uri
+        )
         app.register_blueprint(google_bp, url_prefix="/login")
 
-
-    # Rutas principales accesibles en producción y testing
+    # Rutas principales
     @app.route('/')
     def index():
         return render_template('login.html')
@@ -94,7 +102,6 @@ def create_app(testing=False):
             else:
                 return redirect(url_for('cliente_dashboard'))
         else:
-            # En testing solo redirige al index o simula acceso
             return redirect(url_for('index'))
 
     @app.route('/admin/dashboard')
