@@ -56,7 +56,7 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
-            redirect_to="perfil"
+            redirect_url="/login/google/authorized"  # usa redirect_url, no redirect_to
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
