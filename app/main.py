@@ -48,9 +48,11 @@ def create_app(testing=False):
 
     # Configuración Google OAuth
     if not testing:
+        # Permitir HTTP inseguro solo en desarrollo
         if os.getenv("FLASK_ENV") == "development":
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+        # Definir URI de redireccionamiento según entorno
         redirect_uri = "https://flask-app-1-tmtb.onrender.com/login/google/authorized" \
             if os.getenv("FLASK_ENV") == "production" else "http://localhost:5000/login/google/authorized"
 
@@ -63,8 +65,8 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_url=redirect_uri,
-            offline=True,
-            reprompt_consent=True
+            offline=True
+            # reprompt_consent se omite en producción
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -76,32 +78,43 @@ def create_app(testing=False):
     @app.route('/perfil')
     def perfil():
         if not testing:
-            # Evitar bucle infinito
-            if not google.authorized or 'google_oauth_token' not in session:
+            # Evitar bucle infinito: solo ir a login si no hay token válido
+            if not google.authorized or not session.get('google_oauth_token'):
                 return redirect(url_for('google.login'))
 
-            info = google.get("/oauth2/v3/userinfo").json()
-            email = info.get("email")
-            nombre = info.get("name")
-            google_id = info.get("sub")
-            imagen = info.get("picture")
+            try:
+                resp = google.get("/oauth2/v3/userinfo")
+                resp.raise_for_status()
+                info = resp.json()
 
-            usuario_db = Usuario.query.filter_by(email=email).first()
-            if not usuario_db:
-                flash("Usuario no registrado.", "error")
+                email = info.get("email")
+                nombre = info.get("name")
+                google_id = info.get("sub")
+                imagen = info.get("picture")
+
+                # Guardar token en sesión
+                session['google_oauth_token'] = google.token
+
+                usuario_db = Usuario.query.filter_by(email=email).first()
+                if not usuario_db:
+                    flash("Usuario no registrado.", "error")
+                    return redirect(url_for('index'))
+
+                if not usuario_db.google_id:
+                    usuario_db.google_id = google_id
+                    db.session.commit()
+
+                session['imagen_perfil'] = imagen
+                login_user(usuario_db)
+
+                if usuario_db.rol == 'administrador':
+                    return redirect(url_for('admin_dashboard'))
+                else:
+                    return redirect(url_for('cliente_dashboard'))
+
+            except Exception as e:
+                flash("Error al autenticar con Google: " + str(e), "error")
                 return redirect(url_for('index'))
-
-            if not usuario_db.google_id:
-                usuario_db.google_id = google_id
-                db.session.commit()
-
-            session['imagen_perfil'] = imagen
-            login_user(usuario_db)
-
-            if usuario_db.rol == 'administrador':
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('cliente_dashboard'))
         else:
             return redirect(url_for('index'))
 
