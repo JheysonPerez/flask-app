@@ -1,27 +1,46 @@
-# Librerías necesarias: entorno, JSON, tiempo, errores, mensajería, email y carga de .env
 import os
 import json
 import time
 import traceback
 import pika
+import requests
 from email.message import EmailMessage
 import smtplib
 from dotenv import load_dotenv
 
-load_dotenv()  # Cargar variables de entorno desde el archivo .env
+load_dotenv()
 
-# Configuración de variables desde el entorno
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
-
 SMTP_SERVER   = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
 SMTP_PORT     = int(os.getenv('MAIL_PORT', 587))
 SMTP_USER     = os.getenv('MAIL_USERNAME')
 SMTP_PASS     = os.getenv('MAIL_PASSWORD')
 MAIL_USE_TLS  = os.getenv('MAIL_USE_TLS', 'true').lower() == 'true'
 
-boletas = []   # Lista para almacenar boletas recibidas
+SUNAT_TOKEN = os.getenv('SUNAT_TOKEN')  # o token del API que uses para DNI
 
-# Envía un correo electrónico con los detalles de la boleta
+boletas = []
+
+# Consulta al API para obtener datos con DNI
+def obtener_datos_dni(dni: str):
+    url = "https://apiperu.dev/api/dni" 
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {SUNAT_TOKEN}"
+    }
+    payload = json.dumps({"dni": dni})
+    try:
+        response = requests.post(url, headers=headers, data=payload, timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"[DNI] Error {response.status_code}: {response.text}")
+            return {"error": "Error al consultar DNI"}
+    except requests.RequestException as e:
+        print(f"[DNI] Excepción: {e}")
+        return {"error": "Excepción al conectar con API DNI"}
+
 def enviar_correo(destino, asunto, cuerpo):
     try:
         if not SMTP_USER or not SMTP_PASS:
@@ -29,8 +48,8 @@ def enviar_correo(destino, asunto, cuerpo):
 
         msg = EmailMessage()
         msg["Subject"] = asunto
-        msg["From"]    = SMTP_USER
-        msg["To"]      = destino
+        msg["From"] = SMTP_USER
+        msg["To"] = destino
         msg.set_content(cuerpo)
 
         print(f"[EMAIL] Conectando a {SMTP_SERVER}:{SMTP_PORT}")
@@ -46,7 +65,6 @@ def enviar_correo(destino, asunto, cuerpo):
         print(f"[EMAIL] Error al enviar correo: {e}")
         traceback.print_exc()
 
-# Función que procesa los mensajes recibidos desde RabbitMQ
 def callback(ch, method, properties, body):
     try:
         print(f"[BOLETA] Mensaje recibido: {body}")
@@ -55,17 +73,26 @@ def callback(ch, method, properties, body):
         if not isinstance(data, dict):
             raise ValueError("El cuerpo del mensaje no es un JSON válido")
 
-        # Solo procesa si es boleta
         if data.get("tipo_comprobante") != "boleta":
             print("[BOLETA] Ignorado: no es boleta")
             ch.basic_ack(delivery_tag=method.delivery_tag)
             return
 
-        # Almacena boleta en memoria tal cual llega
+        dni = data.get("dni")
+        if not dni:
+            print("[BOLETA] No se recibió DNI, ignorando mensaje.")
+            ch.basic_ack(delivery_tag=method.delivery_tag)
+            return
+
+        datos_dni = obtener_datos_dni(dni)
+        if 'data' in datos_dni:
+            data.update(datos_dni['data'])
+        else:
+            data.update({"dni_error": datos_dni.get("error", "Desconocido")})
+
         boletas.append(data)
         print(f"[BOLETA] Boleta almacenada: {data}")
 
-        # Envia correo si se especificó destino
         email_destino = data.get("email_destino")
         if email_destino:
             cuerpo = "Detalle de la boleta:\n\n" + \
@@ -85,7 +112,6 @@ def callback(ch, method, properties, body):
         traceback.print_exc()
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
-# Conexión con RabbitMQ y consumo de mensajes de la cola 'cola_boletas'
 def consumir():
     intentos = 10
     for i in range(intentos):
@@ -112,7 +138,6 @@ def consumir():
             traceback.print_exc()
             break
 
-# Punto de entrada principal del script
 if __name__ == "__main__":
     print("[BOLETA] Iniciando consumidor de boletas…")
     consumir()

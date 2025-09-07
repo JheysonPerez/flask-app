@@ -2,13 +2,13 @@ import sys
 import os
 import logging
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, current_app, session, flash
-from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
+from functools import wraps
+from flask_login import login_required, current_user
+
 from app.models.producto import Producto
 from app.models.categoria import Categoria
-from app.models.usuario import Usuario
 from app.extensions import db
-from functools import wraps
 
 producto_bp = Blueprint('producto', __name__)
 
@@ -31,18 +31,19 @@ def validate_active_cliente(func):
     """Decorador para validar que el usuario está activo y es cliente."""
     @wraps(func)
     def wrapper(*args, **kwargs):
-        usuario = Usuario.query.get(current_user.id)
-        if not usuario:
-            logger.error(f"[{func.__name__}] Usuario {current_user.id} no encontrado")
-            return jsonify({'msg': 'Usuario no encontrado'}), 404
+        usuario = current_user
+        if not usuario or usuario.is_anonymous:
+            logger.error(f"[{func.__name__}] Usuario no autenticado")
+            return jsonify({'msg': 'Usuario no autenticado'}), 401
         if usuario.estado != "activo":
-            logger.warning(f"[{func.__name__}] Usuario {current_user.id} inactivo intentó acceder")
+            logger.warning(f"[{func.__name__}] Usuario {usuario.id} inactivo intentó acceder")
             return jsonify({"msg": "Usuario inactivo"}), 403
-        if current_user.rol != 'cliente':
-            logger.warning(f"[{func.__name__}] Usuario {current_user.id} con rol {current_user.rol} intentó acceder")
+        if usuario.rol != 'cliente':
+            logger.warning(f"[{func.__name__}] Usuario {usuario.id} con rol {usuario.rol} intentó acceder")
             return jsonify({'msg': 'Solo los clientes pueden realizar esta acción'}), 403
         return func(*args, **kwargs)
     return wrapper
+
 
 @producto_bp.route('/productos/nuevo', methods=['GET'])
 @login_required
@@ -52,6 +53,7 @@ def nuevo_producto():
     logger.info(f"[nuevo_producto] Usuario {current_user.id} accede al formulario con {len(categorias)} categorías")
     return render_template('nuevo_producto.html', categorias=categorias)
 
+
 @producto_bp.route('/productos', methods=['POST'])
 @login_required
 @validate_active_cliente
@@ -60,7 +62,6 @@ def crear_producto():
     categoria_nombre = data.get('categoria_nombre', '').strip()
     marca = data.get('marca', '').strip()
 
-    # Validación de datos
     if not all([data.get('nombre'), data.get('precio'), data.get('stock'), categoria_nombre]):
         logger.error("[crear_producto] Datos incompletos en el formulario")
         return jsonify({'msg': 'Todos los campos obligatorios deben completarse'}), 400
@@ -74,7 +75,6 @@ def crear_producto():
         logger.error(f"[crear_producto] Error en datos numéricos: {e}")
         return jsonify({'msg': 'Precio o stock inválidos'}), 400
 
-    # Manejo de categoría
     categoria = Categoria.query.filter_by(nombre=categoria_nombre).first()
     if not categoria:
         if len(categoria_nombre) < 3:
@@ -85,11 +85,13 @@ def crear_producto():
         db.session.commit()
         logger.info(f"[crear_producto] Categoría creada: {categoria_nombre} con ID {categoria.id}")
 
-    # Manejo de archivo
     file = request.files.get('imagen')
     imagen_nombre = None
     if file and allowed_file(file.filename):
-        if file.content_length > MAX_FILE_SIZE:
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        file.seek(0)
+        if file_length > MAX_FILE_SIZE:
             logger.error("[crear_producto] Archivo excede el tamaño máximo")
             return jsonify({'msg': 'El archivo excede el tamaño máximo de 16MB'}), 400
         filename = secure_filename(file.filename)
@@ -100,7 +102,6 @@ def crear_producto():
         imagen_nombre = filename
         logger.info(f"[crear_producto] Imagen guardada en: {file_path}")
 
-    # Crear producto
     nuevo_producto = Producto(
         nombre=data['nombre'].strip(),
         descripcion=data.get('descripcion', '').strip(),
@@ -115,6 +116,7 @@ def crear_producto():
     db.session.commit()
     logger.info(f"[crear_producto] Producto creado con ID: {nuevo_producto.id} por usuario {current_user.id}")
     return redirect(url_for('producto.listar_mis_productos'))
+
 
 @producto_bp.route('/mis-productos', methods=['GET'])
 @login_required
@@ -131,12 +133,6 @@ def listar_mis_productos():
 def obtener_producto(producto_id):
     producto = Producto.query.get_or_404(producto_id)
 
-    msg = f"[obtener_producto] current_user.id: {str(current_user.id)} (tipo {type(current_user.id)}), producto.cliente_id: {producto.cliente_id} (tipo {type(producto.cliente_id)})"
-    logger.info(msg)
-    print(msg)
-    sys.stdout.flush()
-
-    # Comparar como strings para evitar errores por tipos
     if str(producto.cliente_id) != str(current_user.id):
         logger.warning(f"[obtener_producto] Usuario {current_user.id} intentó acceder a producto {producto_id} sin permiso")
         return jsonify({'msg': 'No tienes permiso para ver este producto'}), 403
@@ -150,7 +146,6 @@ def obtener_producto(producto_id):
 @validate_active_cliente
 def editar_producto(producto_id):
     producto = Producto.query.get_or_404(producto_id)
-    # Aquí también compara como strings
     if str(producto.cliente_id) != str(current_user.id):
         logger.warning(f"[editar_producto] Usuario {current_user.id} intentó editar producto {producto_id} sin permiso")
         return jsonify({'msg': 'No tienes permiso para editar este producto'}), 403
@@ -168,9 +163,7 @@ def actualizar_producto(producto_id):
         logger.warning(f"[actualizar_producto] Usuario {current_user.id} intentó actualizar producto {producto_id} sin permiso")
         return jsonify({'msg': 'No tienes permiso para editar este producto'}), 403
 
-
     data = request.form
-    # Validación de datos
     if not all([data.get('nombre'), data.get('precio'), data.get('stock')]):
         logger.error("[actualizar_producto] Datos incompletos en el formulario")
         return jsonify({'msg': 'Todos los campos obligatorios deben completarse'}), 400
@@ -184,10 +177,12 @@ def actualizar_producto(producto_id):
         logger.error(f"[actualizar_producto] Error en datos numéricos: {e}")
         return jsonify({'msg': 'Precio o stock inválidos'}), 400
 
-    # Manejo de archivo
     file = request.files.get('imagen')
     if file and allowed_file(file.filename):
-        if file.content_length > MAX_FILE_SIZE:
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        file.seek(0)
+        if file_length > MAX_FILE_SIZE:
             logger.error("[actualizar_producto] Archivo excede el tamaño máximo")
             return jsonify({'msg': 'El archivo excede el tamaño máximo de 16MB'}), 400
         filename = secure_filename(file.filename)
@@ -195,7 +190,6 @@ def actualizar_producto(producto_id):
         os.makedirs(upload_path, exist_ok=True)
         file_path = os.path.join(upload_path, filename)
         file.save(file_path)
-        # Eliminar imagen antigua si existe
         if producto.imagen_url:
             old_file_path = os.path.join(upload_path, producto.imagen_url)
             if os.path.exists(old_file_path):
@@ -204,7 +198,6 @@ def actualizar_producto(producto_id):
         producto.imagen_url = filename
         logger.info(f"[actualizar_producto] Imagen actualizada para producto {producto_id}")
 
-    # Actualizar producto
     producto.nombre = data.get('nombre', producto.nombre).strip()
     producto.descripcion = data.get('descripcion', producto.descripcion).strip()
     producto.precio = precio
@@ -218,12 +211,12 @@ def actualizar_producto(producto_id):
     logger.info(f"[actualizar_producto] Producto {producto_id} actualizado por usuario {current_user.id}")
     return redirect(url_for('producto.listar_mis_productos'))
 
+
 @producto_bp.route('/productos/<int:producto_id>/eliminar', methods=['POST'])
 @login_required
 @validate_active_cliente
 def eliminar_producto(producto_id):
     producto = Producto.query.get_or_404(producto_id)
-    # Convierte ambos a str para evitar errores de tipo en la comparación
     if str(producto.cliente_id) != str(current_user.id):
         logger.warning(f"[eliminar_producto] Usuario {current_user.id} intentó eliminar producto {producto_id} sin permiso")
         return jsonify({'msg': 'No tienes permiso para eliminar este producto'}), 403
@@ -344,7 +337,6 @@ def filtro_productos():
     if precio_max is not None:
         query = query.filter(Producto.precio <= precio_max)
 
-    # Nuevo filtro: ordenar por stock
     if orden_stock == 'asc':
         query = query.order_by(Producto.stock.asc())
     elif orden_stock == 'desc':
@@ -352,3 +344,13 @@ def filtro_productos():
 
     productos = query.all()
     return render_template('mis_productos.html', productos=productos)
+
+
+
+#Prueba con Locust 
+
+@producto_bp.route('/productos', methods=['GET'])
+def api_productos_publicos():
+    productos = Producto.query.all()
+    resultado = [p.to_dict() for p in productos]
+    return jsonify(resultado), 200

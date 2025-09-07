@@ -107,7 +107,7 @@ def callback(ch, method, properties, body):
                 cuerpo_correo += f"{key}: {value}\n"
             enviar_correo(
                 destino=email_destino,
-                asunto=f"Factura {data.get('numero', 'N/A')}",
+                asunto=f"Factura {data.get('ruc', 'N/A')}",
                 cuerpo=cuerpo_correo
             )
         else:

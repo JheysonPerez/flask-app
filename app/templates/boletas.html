@@ -16,7 +16,7 @@
   <ul class="list-group mb-3">
     <li class="list-group-item"><strong>ID Compra:</strong> {{ compra.id }}</li>
     <li class="list-group-item"><strong>Tipo Comprobante:</strong> {{ compra.tipo_comprobante.nombre if compra.tipo_comprobante else 'N/A' }}</li>
-    <li class="list-group-item"><strong>Nombre y Apellidos:</strong> {{ compra.nombre_apellidos or 'N/A' }}</li>
+    <li class="list-group-item"><strong>DNI:</strong> {{ compra.dni or 'N/A' }}</li>
     <li class="list-group-item"><strong>Email Destino:</strong> {{ compra.email_destino or current_user.email }}</li>
     <li class="list-group-item"><strong>Total:</strong> S/. {{ "%.2f"|format(compra.total) if compra.total else 'N/A' }}</li>
     <li class="list-group-item"><strong>Fecha:</strong> {{ compra.fecha.strftime('%Y-%m-%d %H:%M') if compra.fecha else 'N/A' }}</li>

@@ -18,7 +18,7 @@
         <p>Rol: {{ usuario.rol }}</p>
 
         {% if usuario.rol == 'administrador' %}
-            <a href="{{ url_for('admin_dashboard') }}" class="btn-volver">Volver al Inicio</a>
+            <a href="{{ url_for('bp_admin.listar_clientes') }}" class="btn-volver">Volver al Inicio</a>
         {% else %}
             <a href="{{ url_for('cliente_dashboard') }}" class="btn-volver">Volver al Inicio</a>
         {% endif %}

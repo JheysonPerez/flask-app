@@ -1,11 +1,9 @@
-# app/routes/historial_ventas.py
-from flask import Blueprint, request, render_template, abort, jsonify
+from flask import Blueprint, request, render_template, jsonify
 from flask_login import login_required, current_user
 from app.models.historial_ventas import HistorialVenta
-from app.models.historial_ventas import HistorialVenta as Venta
 from app.models.usuario import Usuario
 from collections import defaultdict, Counter
-from datetime import datetime, timedelta
+from datetime import datetime
 from app.extensions import db
 import pytz
 import logging
@@ -28,21 +26,19 @@ logger.setLevel(logging.DEBUG)
 @historial_ventas_bp.route("/historial_ventas")
 @login_required
 def mostrar_historial_ventas():
-    usuario = Usuario.query.get(current_user.id)
-    if not usuario:
-        logger.error(f"[mostrar_historial_ventas] Usuario {current_user.id} no encontrado")
-        return jsonify({"msg": "Usuario no encontrado"}), 404
+    usuario = current_user
     if usuario.estado != "activo":
-        logger.warning(f"[mostrar_historial_ventas] Usuario {current_user.id} inactivo intentó acceder")
+        logger.warning(f"[mostrar_historial_ventas] Usuario {usuario.id} inactivo intentó acceder")
         return jsonify({"msg": "Usuario inactivo"}), 403
 
-    historial = HistorialVenta.query.filter_by(cliente_id=current_user.id).all()
-    logger.info(f"[mostrar_historial_ventas] Usuario {current_user.id} visualiza {len(historial)} ventas")
+    historial = HistorialVenta.query.filter_by(cliente_id=usuario.id).all()
+    logger.info(f"[mostrar_historial_ventas] Usuario {usuario.id} visualiza {len(historial)} ventas")
 
     return render_template("historial_ventas.html", historial=historial)
 
 
 @dashboard_ventas_bp.route('/dashboard_ventas')
+@login_required
 def dashboard_ventas():
     agrupacion = request.args.get('agrupacion', 'dia')
     ventas = db.session.query(HistorialVenta).all()
@@ -119,8 +115,12 @@ def dashboard_ventas():
 
     for venta in ventas:
         key = None
+
         if filtro == 'tipo_comprobante' and hasattr(venta, 'tipo_comprobante') and venta.tipo_comprobante:
             key = venta.tipo_comprobante.nombre
+            if key:
+                agrupaciones_montos[key] += venta.total_venta
+                agrupaciones_conteo[key] += 1
         elif filtro == 'producto' and hasattr(venta, 'producto') and venta.producto:
             key = venta.producto.nombre
         elif filtro == 'marca' and hasattr(venta, 'producto') and venta.producto and venta.producto.marca:
@@ -128,15 +128,16 @@ def dashboard_ventas():
         elif filtro == 'categoria' and hasattr(venta, 'producto') and venta.producto and venta.producto.categoria:
             key = venta.producto.categoria.nombre
 
-        if key:
+        if key and filtro != 'tipo_comprobante':
             agrupaciones_montos[key] += venta.total_venta
-            agrupaciones_conteo[key] += 1
+            agrupaciones_conteo[key] += venta.cantidad
 
     nombres_grafico = list(agrupaciones_montos.keys())
     montos_grafico = list(agrupaciones_montos.values())
     valores_conteo_grafico = list(agrupaciones_conteo.values())
     total_conteo_grafico = sum(valores_conteo_grafico) or 1
     porcentajes_grafico = [round((v / total_conteo_grafico) * 100, 2) for v in valores_conteo_grafico]
+    cantidades_grafico = valores_conteo_grafico 
 
     return render_template(
         'dashboard_ventas.html',
@@ -150,5 +151,33 @@ def dashboard_ventas():
         filtro=filtro,
         nombres_grafico=nombres_grafico,
         montos_grafico=montos_grafico,
-        porcentajes_grafico=porcentajes_grafico
+        porcentajes_grafico=porcentajes_grafico,
+        cantidades_grafico=cantidades_grafico  
     )
+
+
+#Pruebas con locust
+@dashboard_ventas_bp.route('/api/dashboard/ventas')
+def api_dashboard_ventas():
+    from collections import defaultdict
+    from datetime import datetime
+    import pytz
+
+    zona_local = pytz.timezone('America/Lima')
+    hoy = datetime.now(zona_local)
+
+    ventas = HistorialVenta.query.all()
+    datos = defaultdict(float)
+
+    for venta in ventas:
+        fecha_local = venta.fecha_venta.astimezone(zona_local)
+        if fecha_local.date() == hoy.date():
+            hora = fecha_local.hour
+            datos[f'{hora:02d}:00'] += venta.total_venta
+
+    return jsonify({
+        "fechas": list(datos.keys()),
+        "montos": list(datos.values()),
+        "total_ventas": round(sum(datos.values()), 2),
+        "cantidad_ventas": len(ventas)
+    }), 200

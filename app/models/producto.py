@@ -6,7 +6,7 @@ class Producto(db.Model):
     __tablename__ = "productos"
 
     # Atributos principales
-    id = db.Column(BigInteger, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(255), nullable=False)
     marca = db.Column(db.String(100))  
     descripcion = db.Column(db.Text)

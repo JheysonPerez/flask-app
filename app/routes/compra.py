@@ -12,7 +12,6 @@ from app.models.producto import Producto
 from app.models.usuario import Usuario
 from app.models.tipo_comprobante import TipoComprobante
 
-
 compra_bp = Blueprint("compra", __name__)
 
 @compra_bp.route("/comprar", methods=["POST"])
@@ -25,8 +24,8 @@ def comprar():
 
         cliente_id = current_user.id
         tipo_nombre = request.form.get("tipo_comprobante")
-        ruc = request.form.get("ruc", "")  # Siempre obtener, default ""
-        nombre_completo = request.form.get("nombre_completo", "")
+        ruc = request.form.get("ruc", "")
+        dni = request.form.get("dni", "")
 
         if tipo_nombre not in ["boleta", "factura"]:
             return jsonify({"msg": "Tipo de comprobante inválido"}), 400
@@ -35,12 +34,16 @@ def comprar():
             if not ruc or len(ruc) != 11 or not ruc.isdigit():
                 return jsonify({"msg": "RUC inválido (11 dígitos numéricos)"}), 400
 
+        if tipo_nombre == "boleta":
+            if not dni or len(dni) != 8 or not dni.isdigit():
+                return jsonify({"msg": "DNI inválido (8 dígitos numéricos)"}), 400
+
         tipo_comprobante_obj = TipoComprobante.query.filter_by(nombre=tipo_nombre).first()
         if not tipo_comprobante_obj:
             return jsonify({"msg": f'Tipo comprobante "{tipo_nombre}" no existe'}), 400
         tipo_comprobante_id = tipo_comprobante_obj.id
 
-        usuario = Usuario.query.get(cliente_id)
+        usuario = current_user
         if not usuario:
             return jsonify({"msg": "Usuario no encontrado"}), 404
         if usuario.estado != "activo":
@@ -56,7 +59,7 @@ def comprar():
             items = [items]
 
         if not items or not isinstance(items, list):
-            return jsonify({"msg": "El cestante virtual está vacío o tiene formato inválido"}), 400
+            return jsonify({"msg": "El estante virtual está vacío o tiene formato inválido"}), 400
 
         converted_items = []
         total = 0
@@ -101,13 +104,11 @@ def comprar():
             ruc=ruc,
             total=total,
             email_destino=email_destino,
-            nombre_apellidos=nombre_completo if tipo_nombre == "boleta" else None
-            
+            dni=dni if tipo_nombre == "boleta" else None  
         )
+
         db.session.add(compra)
         db.session.flush()  # Para obtener compra.id sin commit
-
-        productos_detalle = []
 
         for item in converted_items:
             prod = item["producto"]
@@ -129,15 +130,6 @@ def comprar():
             )
             db.session.add(historial)
 
-            productos_detalle.append({
-                "cantidad": item["cantidad"],
-                "marca": prod.marca,
-                "nombre": prod.nombre,
-                "precio_unitario": prod.precio,
-                "producto_id": prod.id,
-                "subtotal": prod.precio * item["cantidad"]
-            })
-
         session.pop("carrito", None)
         db.session.commit()
 
@@ -145,22 +137,6 @@ def comprar():
         db.session.rollback()
         print(f"Error procesando la compra: {e}")
         return jsonify({"msg": "Error procesando la compra", "error": str(e)}), 500
-
-    msg = {
-        "compra_id": compra.id,
-        "tipo_comprobante": tipo_nombre,
-        "email_destino": email_destino,
-    }
-
-    if tipo_nombre == "factura":
-        msg["ruc"] = ruc
-
-    if tipo_nombre == "boleta":
-        msg["nombre_apellidos"] = nombre_completo
-
-    msg["productos"] = productos_detalle
-    msg["total"] = total
-
 
     try:
         rabbit_host = os.getenv("RABBITMQ_HOST", "rabbitmq")
@@ -176,6 +152,17 @@ def comprar():
         queue_name = "cola_boletas" if tipo_nombre == "boleta" else "cola_facturas"
         channel.queue_declare(queue=queue_name, durable=True)
 
+        msg = {
+            "compra_id": compra.id,
+            "tipo_comprobante": tipo_nombre,
+            "email_destino": email_destino,
+            "total": total
+        }
+        if tipo_nombre == "factura":
+            msg["ruc"] = ruc
+        if tipo_nombre == "boleta":
+            msg["dni"] = dni
+
         channel.basic_publish(
             exchange="",
             routing_key=queue_name,
@@ -186,52 +173,106 @@ def comprar():
 
     except Exception as e:
         print(f"[PUBLISH] Error enviando a RabbitMQ: {e}")
-        return jsonify({
-            "msg": "Compra guardada, pero falló envío a cola RabbitMQ",
-            **msg,
-            "error": str(e)
-        }), 202
+        return "Compra guardada, pero falló el envío a la cola", 202
 
-    return jsonify({
-        "msg": "Compra confirmada correctamente",
-        **msg
-    }), 201
-
-@compra_bp.route("/compras/<int:compra_id>", methods=["GET"])
-@login_required
-def detalle_compra(compra_id):
-    compra = Compra.query.get_or_404(compra_id)
-
-    if compra.tipo_comprobante.nombre == "boleta":
-        return render_template("boletas.html", compra=compra)
-
-    elif compra.tipo_comprobante.nombre == "factura":
-        return render_template("facturas.html", compra=compra)
-
-    else:
-        return "Tipo de comprobante no soportado", 400
+    return "✅COMPRA CONFIRMADA CORRECTAMENTE", 200
 
 
-@compra_bp.route('/compra/<int:id>/pdf')
+@compra_bp.route("/compra/<int:id>/pdf")
 @login_required
 def compra_pdf(id):
     compra = Compra.query.get_or_404(id)
-
-    # Elegir plantilla según tipo de comprobante
-    if compra.tipo_comprobante and compra.tipo_comprobante.nombre.lower() == 'factura':
-        plantilla = 'factura_pdf.html'
-    else:
-        plantilla = 'boleta_pdf.html'
-
-    # Renderizar la plantilla correspondiente
+    plantilla = 'factura_pdf.html' if compra.tipo_comprobante and compra.tipo_comprobante.nombre.lower() == 'factura' else 'boleta_pdf.html'
     html = render_template(plantilla, compra=compra)
-
-    # Generar PDF
     pdf = HTML(string=html, base_url=url_for('static', filename='', _external=True)).write_pdf()
-
-    # Crear respuesta PDF
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'inline; filename={plantilla.replace("_pdf.html", "")}_{id}.pdf'
-
     return response
+
+
+@compra_bp.route("/detalle/<int:compra_id>")
+@login_required
+def detalle_compra(compra_id):
+    compra = Compra.query.get_or_404(compra_id)
+    productos = CompraProducto.query.filter_by(compra_id=compra.id).all()
+
+    if compra.tipo_comprobante and compra.tipo_comprobante.nombre.lower() == "factura":
+        plantilla = "facturas.html"
+    else:
+        plantilla = "boletas.html"
+
+    return render_template(plantilla, compra=compra, productos=productos)
+
+
+@compra_bp.route("/test/compra", methods=["POST"])
+def compra_test_publica():
+    try:
+        data = request.get_json()
+        cliente_id = data.get("cliente_id", 2)
+        tipo_nombre = data.get("tipo_comprobante", "boleta").lower()
+        email_destino = data.get("email_destino", "test@example.com")
+
+        # Validar tipo comprobante
+        tipo_comprobante = TipoComprobante.query.filter_by(nombre=tipo_nombre).first()
+        if not tipo_comprobante:
+            return jsonify({"msg": "Tipo de comprobante no válido"}), 400
+
+        # Validar campos según el tipo
+        if tipo_nombre == "boleta":
+            dni = data.get("dni", "")
+            if not dni or len(dni) != 8 or not dni.isdigit():
+                return jsonify({"msg": "DNI inválido (8 dígitos numéricos)"}), 400
+            ruc = None  # No se usa
+        elif tipo_nombre == "factura":
+            ruc = data.get("ruc", "")
+            if not ruc or len(ruc) != 11 or not ruc.isdigit():
+                return jsonify({"msg": "RUC inválido (11 dígitos numéricos)"}), 400
+            dni = None  # No se usa
+        else:
+            return jsonify({"msg": "Tipo de comprobante no soportado"}), 400
+
+        # Buscar producto con stock
+        producto = Producto.query.filter(Producto.stock > 0).first()
+        if not producto:
+            return jsonify({"msg": "No hay productos con stock para pruebas"}), 400
+
+        cantidad = 1
+        total = producto.precio * cantidad
+
+        # Crear compra
+        compra = Compra(
+            cliente_id=cliente_id,
+            tipo_comprobante_id=tipo_comprobante.id,
+            ruc=ruc,
+            total=total,
+            email_destino=email_destino,
+            dni=dni
+        )
+        db.session.add(compra)
+        db.session.flush()
+
+        # Asociar producto
+        producto.stock -= cantidad
+        compra_producto = CompraProducto(
+            compra_id=compra.id,
+            producto_id=producto.id,
+            cantidad=cantidad
+        )
+        historial = HistorialVenta(
+            cliente_id=cliente_id,
+            producto_id=producto.id,
+            cantidad=cantidad,
+            total_venta=total,
+            tipo_comprobante_id=tipo_comprobante.id
+        )
+
+        db.session.add(compra_producto)
+        db.session.add(historial)
+        db.session.commit()
+
+        return jsonify({"msg": "✅ Compra de prueba registrada", "compra_id": compra.id}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "❌ Error en compra de prueba", "error": str(e)}), 500

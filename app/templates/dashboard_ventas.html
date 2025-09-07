@@ -9,7 +9,7 @@
     <!-- Botón para volver -->
     <a href="{{ url_for('historial_ventas.mostrar_historial_ventas') }}" class="btn btn-secondary mb-4">Volver al historial</a>
 
-    <!-- Selector de filtro para agrupación (arriba) -->
+    <!-- Selector de filtro para agrupación -->
     <div class="mb-3 d-flex align-items-center gap-3">
         <div>
             <label for="filtro-agrupacion" class="form-label me-2">Agrupar ventas por:</label>
@@ -27,7 +27,7 @@
         <canvas id="lineChart"></canvas>
     </div>
 
-    <!-- Filtro dinámico para gráfico circular (ahora justo debajo del gráfico lineal) -->
+    <!-- Filtro dinámico para gráfico circular -->
     <div class="mb-3 d-flex align-items-center gap-3">
         <div>
             <label for="filtro-dinamico" class="form-label me-2">Filtro para gráfico circular:</label>
@@ -55,9 +55,9 @@
     const montos = {{ montos | tojson | safe }};
     const agrupacion = "{{ agrupacion }}";
 
-    // Datos para gráfico circular con filtro dinámico
     const nombresGrafico = {{ nombres_grafico | tojson | safe }};
     const porcentajesGrafico = {{ porcentajes_grafico | tojson | safe }};
+    const cantidadesGrafico = {{ cantidades_grafico | tojson | safe }};
 
     // Gráfico de línea: Ventas por Fecha
     new Chart(document.getElementById('lineChart'), {
@@ -121,9 +121,11 @@
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            let label = context.label || '';
-                            let value = context.raw;
-                            return `${label}: ${value}%`;
+                            const label = context.label || '';
+                            const porcentaje = context.raw;
+                            const index = context.dataIndex;
+                            const cantidad = cantidadesGrafico[index];
+                            return `${label}: ${porcentaje}% (${cantidad} ventas)`;
                         }
                     }
                 }
@@ -131,7 +133,7 @@
         }
     });
 
-    // Eventos para cambiar filtros y recargar la página con nuevos parámetros
+    // Eventos para cambiar filtros
     document.getElementById('filtro-agrupacion').addEventListener('change', function() {
         const valor = this.value;
         const url = new URL(window.location);
