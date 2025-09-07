@@ -40,6 +40,11 @@ def create_app(testing=False):
             SECRET_KEY=os.getenv('FLASK_SECRET_KEY', 'clave_de_desarrollo')
         )
 
+    # Configuración de cookies para producción
+    if os.getenv("FLASK_ENV") == "production":
+        app.config['SESSION_COOKIE_SECURE'] = True
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
     # Inicializar extensiones
     db.init_app(app)
     jwt.init_app(app)
@@ -52,10 +57,7 @@ def create_app(testing=False):
         if os.getenv("FLASK_ENV") == "development":
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-        # Definir URI de redireccionamiento según entorno
-        redirect_uri = "https://flask-app-1-tmtb.onrender.com/login/google/authorized" \
-            if os.getenv("FLASK_ENV") == "production" else "http://localhost:5000/login/google/authorized"
-
+        # Crear blueprint de Google OAuth
         google_bp = make_google_blueprint(
             client_id=os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
             client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -64,9 +66,8 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
-            redirect_url=redirect_uri,
+            redirect_to="perfil",  # nombre de la función Flask a redirigir después del login
             offline=True
-            # reprompt_consent se omite en producción
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -78,9 +79,8 @@ def create_app(testing=False):
     @app.route('/perfil')
     def perfil():
         if not testing:
-            # Evitar bucle infinito: solo ir a login si no hay token válido
-            if not google.authorized or not session.get('google_oauth_token'):
-                return redirect(url_for('google.login'))
+            if not google.authorized:
+                return redirect(url_for("google.login"))
 
             try:
                 resp = google.get("/oauth2/v3/userinfo")
