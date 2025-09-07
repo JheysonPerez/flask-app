@@ -8,7 +8,6 @@ from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 
-# Cargar variables de entorno
 load_dotenv()
 
 login_manager = LoginManager()
@@ -20,7 +19,9 @@ def load_user(user_id):
 def create_app(testing=False):
     app = Flask(__name__)
 
-    # Configuración general
+    # -------------------------
+    # Configuración básica
+    # -------------------------
     if testing:
         app.config.update(
             SQLALCHEMY_DATABASE_URI="sqlite:///test.db?check_same_thread=False",
@@ -47,18 +48,20 @@ def create_app(testing=False):
     mail.init_app(app)
     login_manager.init_app(app)
 
-    # Configuración de Google OAuth
+    # -------------------------
+    # Google OAuth
+    # -------------------------
     if not testing:
-        # Solo permitir transporte inseguro en desarrollo local
+        # Permitir transporte inseguro solo en local
         if os.getenv("FLASK_ENV") == "development":
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
-        # Definir redirect_uri según entorno
+        
+        # Ajustar redirect_uri según entorno
         redirect_uri = "/login/google/authorized"
         if os.getenv("FLASK_ENV") == "production":
             redirect_uri = "https://flask-app-1-tmtb.onrender.com/login/google/authorized"
 
-        # Crear blueprint de Google OAuth
+        # Crear blueprint de Google
         google_bp = make_google_blueprint(
             client_id=os.getenv("GOOGLE_OAUTH_CLIENT_ID"),
             client_secret=os.getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -71,7 +74,9 @@ def create_app(testing=False):
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
+    # -------------------------
     # Rutas principales
+    # -------------------------
     @app.route('/')
     def index():
         return render_template('login.html')
@@ -79,45 +84,33 @@ def create_app(testing=False):
     @app.route('/perfil')
     def perfil():
         if testing:
-            # En testing, solo redirige al index
             return redirect(url_for('index'))
 
-        # Evitar bucle infinito: verificar si ya estamos autorizados
-        if not google.authorized:
-            return redirect(url_for('google.login'))
-
-        # Obtener información del usuario desde Google
-        resp = google.get("/oauth2/v3/userinfo")
-        if not resp.ok:
-            flash("Error al obtener información de Google.", "error")
+        # Manejar errores de Google OAuth
+        try:
+            resp = google.get("/oauth2/v3/userinfo")
+            resp.raise_for_status()
+        except Exception:
+            flash("Error en autenticación con Google.", "error")
             return redirect(url_for('index'))
 
         info = resp.json()
         email = info.get("email")
-        nombre = info.get("name")
-        google_id = info.get("sub")
-        imagen = info.get("picture")
-
-        # Buscar usuario en base de datos
         usuario_db = Usuario.query.filter_by(email=email).first()
         if not usuario_db:
             flash("Usuario no registrado.", "error")
             return redirect(url_for('index'))
 
-        # Guardar Google ID si aún no existe
         if not usuario_db.google_id:
-            usuario_db.google_id = google_id
+            usuario_db.google_id = info.get("sub")
             db.session.commit()
 
-        # Guardar información de sesión y loguear
-        session['imagen_perfil'] = imagen
+        session['imagen_perfil'] = info.get("picture")
         login_user(usuario_db)
 
-        # Redirigir según rol
         if usuario_db.rol == 'administrador':
             return redirect(url_for('admin_dashboard'))
-        else:
-            return redirect(url_for('cliente_dashboard'))
+        return redirect(url_for('cliente_dashboard'))
 
     @app.route('/admin/dashboard')
     @login_required
@@ -145,7 +138,9 @@ def create_app(testing=False):
         session.clear()
         return redirect(url_for('index'))
 
+    # -------------------------
     # Registrar blueprints
+    # -------------------------
     from app.routes.admin import bp_admin
     from app.routes.cliente import bp_cliente
     from app.routes.auth import auth_bp
@@ -162,6 +157,9 @@ def create_app(testing=False):
     app.register_blueprint(producto_bp, url_prefix='/api')
     app.register_blueprint(dashboard_ventas_bp)
 
+    # -------------------------
+    # Comando CLI
+    # -------------------------
     @app.cli.command("create-db")
     def create_db():
         with app.app_context():
@@ -170,7 +168,9 @@ def create_app(testing=False):
 
     return app
 
-# Ejecutar
+# -------------------------
+# Ejecutar la app
+# -------------------------
 app = create_app()
 
 if __name__ == '__main__':
