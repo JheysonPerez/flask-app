@@ -8,6 +8,7 @@ from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 
+# Cargar variables de entorno
 load_dotenv()
 
 login_manager = LoginManager()
@@ -19,6 +20,7 @@ def load_user(user_id):
 def create_app(testing=False):
     app = Flask(__name__)
 
+    # Configuración general
     if testing:
         app.config.update(
             SQLALCHEMY_DATABASE_URI="sqlite:///test.db?check_same_thread=False",
@@ -76,33 +78,46 @@ def create_app(testing=False):
 
     @app.route('/perfil')
     def perfil():
-        if not testing:
-            if not google.authorized:
-                return redirect(url_for('google.login'))
-
-            info = google.get("/oauth2/v3/userinfo").json()
-            email = info.get("email")
-            nombre = info.get("name")
-            google_id = info.get("sub")
-            imagen = info.get("picture")
-
-            usuario_db = Usuario.query.filter_by(email=email).first()
-            if not usuario_db:
-                return redirect(url_for('index'))
-
-            if not usuario_db.google_id:
-                usuario_db.google_id = google_id
-                db.session.commit()
-
-            session['imagen_perfil'] = imagen
-            login_user(usuario_db)
-
-            if usuario_db.rol == 'administrador':
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('cliente_dashboard'))
-        else:
+        if testing:
+            # En testing, solo redirige al index
             return redirect(url_for('index'))
+
+        # Evitar bucle infinito: verificar si ya estamos autorizados
+        if not google.authorized:
+            return redirect(url_for('google.login'))
+
+        # Obtener información del usuario desde Google
+        resp = google.get("/oauth2/v3/userinfo")
+        if not resp.ok:
+            flash("Error al obtener información de Google.", "error")
+            return redirect(url_for('index'))
+
+        info = resp.json()
+        email = info.get("email")
+        nombre = info.get("name")
+        google_id = info.get("sub")
+        imagen = info.get("picture")
+
+        # Buscar usuario en base de datos
+        usuario_db = Usuario.query.filter_by(email=email).first()
+        if not usuario_db:
+            flash("Usuario no registrado.", "error")
+            return redirect(url_for('index'))
+
+        # Guardar Google ID si aún no existe
+        if not usuario_db.google_id:
+            usuario_db.google_id = google_id
+            db.session.commit()
+
+        # Guardar información de sesión y loguear
+        session['imagen_perfil'] = imagen
+        login_user(usuario_db)
+
+        # Redirigir según rol
+        if usuario_db.rol == 'administrador':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return redirect(url_for('cliente_dashboard'))
 
     @app.route('/admin/dashboard')
     @login_required
