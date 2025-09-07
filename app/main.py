@@ -56,8 +56,10 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
-            redirect_url="/login/google/authorized"  
+            redirect_url="/login/google/authorized"
+        )  
         app.register_blueprint(google_bp, url_prefix="/login")
+
 
     # Rutas principales accesibles en producción y testing
     @app.route('/')
