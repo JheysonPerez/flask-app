@@ -68,14 +68,10 @@ def create_app(testing=False):
 
     @app.route('/')
     def index():
-        if current_user.is_authenticated:
-            usuario = Usuario.query.filter_by(id=current_user.id).first()
-            if usuario:
-                app.logger.debug(f"Usuario autenticado: {usuario.email}, rol: {usuario.rol}")
-                if usuario.rol == 'administrador':
-                    return redirect(url_for('admin_dashboard'))
-                return redirect(url_for('cliente_dashboard'))
-        app.logger.debug("Usuario no autenticado, renderizando login.html")
+        app.logger.debug("Accediendo a /index, renderizando login.html")
+        # Limpiar token de Google OAuth para forzar nuevo login
+        session.pop('google_oauth_token', None)
+        session.modified = True
         return render_template('login.html')
 
     @app.route('/perfil')
@@ -146,19 +142,15 @@ def create_app(testing=False):
             return redirect(url_for('index'))
         return render_template('perfil.html', usuario=usuario_db, imagen=session.get('imagen_perfil'))
 
-
-    @app.route("/logout")
+    @app.route('/logout')
+    @login_required
     def logout():
-        # Cierra sesión local en Flask
+        app.logger.debug("Cerrando sesión")
+        logout_user()
+        session.pop('google_oauth_token', None)
         session.clear()
-
-        # Redirigir también a logout de Google
-        google_logout_url = (
-            "https://accounts.google.com/Logout?continue=https://appengine.google.com/_ah/logout"
-            f"?continue={url_for('index', _external=True)}"
-        )
-
-        return redirect(google_logout_url)
+        app.logger.debug("Sesión limpiada, redirigiendo a /index")
+        return redirect(url_for('index'))
 
     from app.routes.admin import bp_admin
     from app.routes.cliente import bp_cliente
