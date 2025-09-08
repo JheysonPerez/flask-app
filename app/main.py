@@ -9,7 +9,7 @@ from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 from sqlalchemy.exc import OperationalError
-from flask_dance.consumer import oauth_before_login
+from flask_dance.consumer import oauth_authorized
 
 # Configurar logging
 logging.basicConfig(level=logging.DEBUG)
@@ -84,17 +84,10 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True
+            offline=True,
+            prompt="select_account"
         )
         app.register_blueprint(google_bp, url_prefix="/login")
-
-        @oauth_before_login.connect
-        def before_google_login(blueprint, url):
-            logger.debug(f"URL de autorización original: {url}")
-            if 'prompt=select_account' not in url:
-                url += "&prompt=select_account"
-            logger.debug(f"URL de autorización modificada: {url}")
-            return url
 
     @app.route('/')
     def index():
@@ -102,7 +95,7 @@ def create_app(testing=False):
         if current_user.is_authenticated:
             logger.debug(f"Usuario autenticado en /index, cerrando sesión: {current_user.email}")
             logout_user()
-        session.clear()
+            session.clear()
         response = make_response(render_template('login.html'))
         response.set_cookie('session', '', expires=0)
         return response
@@ -111,18 +104,18 @@ def create_app(testing=False):
     def google_login():
         if not google.authorized:
             logger.debug("Iniciando login con Google, forzando selección de cuenta")
-            return redirect(url_for("google.login") + "&prompt=select_account")
+            return redirect(url_for("google.login"))
         logger.debug("Usuario ya autorizado, redirigiendo a /perfil")
         return redirect(url_for('perfil'))
 
+    @oauth_authorized.connect_via(google_bp)
+    def google_authorized(blueprint, token):
+        logger.debug(f"Token recibido de Google: {token}")
+        session['google_oauth_token'] = token
+        return False  # Evitar que flask-dance maneje la redirección automáticamente
+
     @app.route('/perfil')
     def perfil():
-        # Forzar logout si hay un usuario autenticado para evitar sesiones antiguas
-        if current_user.is_authenticated:
-            logger.debug(f"Usuario autenticado en /perfil, forzando logout: email={current_user.email}")
-            logout_user()
-            session.clear()
-
         if not google.authorized or 'google_oauth_token' not in session:
             logger.debug("No hay token de Google, redirigiendo a google.login")
             return redirect(url_for("google_login"))
@@ -153,10 +146,9 @@ def create_app(testing=False):
 
             logger.debug(f"Usuario encontrado: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
             login_user(usuario_db, remember=True)
-            session['google_oauth_token'] = google.token
             session['imagen_perfil'] = imagen
             session.modified = True
-            logger.debug(f"Usuario logueado: {usuario_db.email}, rol={usuario_db.rol}, token guardado")
+            logger.debug(f"Usuario logueado: {usuario_db.email}, rol={usuario_db.rol}")
 
             if usuario_db.rol.strip().lower() == 'administrador':
                 logger.debug("Redirigiendo a admin_dashboard")
