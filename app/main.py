@@ -9,7 +9,7 @@ from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 from sqlalchemy.exc import OperationalError
-from flask_dance.consumer import oauth_authorized
+from flask_dance.consumer import oauth_authorized, oauth_before_login
 
 # Configurar logging
 logging.basicConfig(level=logging.DEBUG)
@@ -84,10 +84,18 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True,
-            prompt="select_account"
+            offline=True
         )
         app.register_blueprint(google_bp, url_prefix="/login")
+
+        # Forzar prompt=select_account en la URL de autorización
+        @oauth_before_login.connect_via(google_bp)
+        def google_before_login(blueprint, url):
+            logger.debug(f"URL de autorización antes: {url}")
+            if 'prompt=' not in url:
+                url += '&prompt=select_account'
+            logger.debug(f"URL de autorización modificada: {url}")
+            return url
 
     @app.route('/')
     def index():
