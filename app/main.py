@@ -8,6 +8,7 @@ from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
 from sqlalchemy.exc import OperationalError
+from flask_dance.consumer import oauth_before_login
 
 load_dotenv()
 
@@ -80,6 +81,13 @@ def create_app(testing=False):
             offline=True
         )
         app.register_blueprint(google_bp, url_prefix="/login")
+
+        # Forzar prompt=select_account antes de cada login
+        @oauth_before_login.connect
+        def before_google_login(blueprint, url):
+            if 'prompt' not in url:
+                url += "&prompt=select_account"
+            return url
 
     @app.route('/')
     def index():
