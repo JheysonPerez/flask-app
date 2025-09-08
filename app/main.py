@@ -3,6 +3,7 @@ from flask import Flask, redirect, url_for, render_template, session, flash, mak
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_dance.contrib.google import make_google_blueprint, google
+from sqlalchemy.sql import text
 from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
@@ -48,7 +49,7 @@ def create_app(testing=False):
     try:
         db.init_app(app)
         with app.app_context():
-            db.session.execute("SELECT 1")
+            db.session.execute(text("SELECT 1"))  # Corregido para usar text()
             app.logger.debug("Conexión a la base de datos exitosa")
     except OperationalError as e:
         app.logger.error(f"Error al conectar con la base de datos: {str(e)}")
