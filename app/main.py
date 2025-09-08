@@ -146,19 +146,19 @@ def create_app(testing=False):
             return redirect(url_for('index'))
         return render_template('perfil.html', usuario=usuario_db, imagen=session.get('imagen_perfil'))
 
-    @app.route('/logout')
-    @login_required
+
+    @app.route("/logout")
     def logout():
-        # Cierra sesión de Flask-Login
-        logout_user()
-
-        # Limpia la sesión completamente
+        # Cierra sesión local en Flask
         session.clear()
-        session.pop('google_oauth_token', None)
-        session.modified = True  # 🔑 fuerza invalidar cookie
 
-        flash("Sesión cerrada correctamente.", "success")
-        return redirect(url_for('index'))
+        # Redirigir también a logout de Google
+        google_logout_url = (
+            "https://accounts.google.com/Logout?continue=https://appengine.google.com/_ah/logout"
+            f"?continue={url_for('index', _external=True)}"
+        )
+
+        return redirect(google_logout_url)
 
     from app.routes.admin import bp_admin
     from app.routes.cliente import bp_cliente
