@@ -14,3 +14,4 @@ flask-login
 weasyprint
 pytz
 gunicorn
+flask-dance[google]>=7.0.0

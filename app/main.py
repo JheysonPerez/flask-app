@@ -49,7 +49,7 @@ def create_app(testing=False):
     try:
         db.init_app(app)
         with app.app_context():
-            db.session.execute(text("SELECT 1"))  # Corregido para usar text()
+            db.session.execute(text("SELECT 1"))
             app.logger.debug("Conexión a la base de datos exitosa")
     except OperationalError as e:
         app.logger.error(f"Error al conectar con la base de datos: {str(e)}")
@@ -72,8 +72,7 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True,
-            prompt="select_account"  # Forzar selección de cuenta
+            offline=True
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -85,6 +84,13 @@ def create_app(testing=False):
         session.modified = True
         return render_template('login.html')
 
+    @app.route('/login/google')
+    def google_login():
+        if not google.authorized:
+            # Añadir prompt=select_account a la URL de autorización
+            return redirect(url_for("google.login") + "&prompt=select_account")
+        return redirect(url_for('perfil'))
+
     @app.route('/perfil')
     def perfil():
         if current_user.is_authenticated:
@@ -95,7 +101,7 @@ def create_app(testing=False):
 
         if not testing and (not google.authorized or 'google_oauth_token' not in session):
             app.logger.debug("No hay token de Google, redirigiendo a google.login")
-            return redirect(url_for("google.login"))
+            return redirect(url_for("google_login"))
 
         try:
             app.logger.debug("Obteniendo información de usuario desde Google")
