@@ -111,11 +111,16 @@ def create_app(testing=False):
     @oauth_authorized.connect_via(google_bp)
     def google_authorized(blueprint, token):
         logger.debug(f"Token recibido de Google: {token}")
-        session['google_oauth_token'] = token
+        if token:
+            session['google_oauth_token'] = token
+            logger.debug("Token guardado en la sesión")
+        else:
+            logger.error("No se recibió token de Google")
         return False  # Evitar que flask-dance maneje la redirección automáticamente
 
     @app.route('/perfil')
     def perfil():
+        logger.debug(f"Contenido de la sesión en /perfil: {dict(session)}")
         if not google.authorized or 'google_oauth_token' not in session:
             logger.debug("No hay token de Google, redirigiendo a google.login")
             return redirect(url_for("google_login"))
