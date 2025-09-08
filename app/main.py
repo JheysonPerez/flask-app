@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask, redirect, url_for, render_template, session, flash, make_response
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -10,6 +11,10 @@ from app.routes.categoria import bp_categoria
 from sqlalchemy.exc import OperationalError
 from flask_dance.consumer import oauth_before_login
 
+# Configurar logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 login_manager = LoginManager()
@@ -19,13 +24,14 @@ login_manager.login_view = "index"
 def load_user(user_id):
     user = db.session.get(Usuario, int(user_id))
     if user:
-        app.logger.debug(f"Usuario cargado: id={user_id}, email={user.email}, rol={user.rol}, google_id={user.google_id}")
+        logger.debug(f"Usuario cargado: id={user_id}, email={user.email}, rol={user.rol}, google_id={user.google_id}")
     else:
-        app.logger.error(f"No se pudo cargar usuario con id={user_id}")
+        logger.error(f"No se pudo cargar usuario con id={user_id}")
     return user
 
 def create_app(testing=False):
     app = Flask(__name__)
+    app.logger.setLevel(logging.DEBUG)
 
     if testing:
         app.config.update(
@@ -56,9 +62,9 @@ def create_app(testing=False):
         db.init_app(app)
         with app.app_context():
             db.session.execute(text("SELECT 1"))
-            app.logger.debug("Conexión a la base de datos exitosa")
+            logger.debug("Conexión a la base de datos exitosa")
     except OperationalError as e:
-        app.logger.error(f"Error al conectar con la base de datos: {str(e)}")
+        logger.error(f"Error al conectar con la base de datos: {str(e)}")
         raise
 
     jwt.init_app(app)
@@ -82,16 +88,17 @@ def create_app(testing=False):
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
-        # Forzar prompt=select_account antes de cada login
         @oauth_before_login.connect
         def before_google_login(blueprint, url):
+            logger.debug(f"URL de autorización original: {url}")
             if 'prompt' not in url:
                 url += "&prompt=select_account"
+            logger.debug(f"URL de autorización modificada: {url}")
             return url
 
     @app.route('/')
     def index():
-        app.logger.debug("Accediendo a /index, renderizando login.html")
+        logger.debug("Accediendo a /index, renderizando login.html")
         session.pop('google_oauth_token', None)
         session.modified = True
         return render_template('login.html')
@@ -99,31 +106,32 @@ def create_app(testing=False):
     @app.route('/login/google')
     def google_login():
         if not google.authorized:
-            app.logger.debug("Iniciando login con Google, forzando selección de cuenta")
+            logger.debug("Iniciando login con Google, forzando selección de cuenta")
             return redirect(url_for("google.login") + "&prompt=select_account")
+        logger.debug("Usuario ya autorizado, redirigiendo a /perfil")
         return redirect(url_for('perfil'))
 
     @app.route('/perfil')
     def perfil():
         if current_user.is_authenticated:
-            app.logger.debug(f"Usuario ya autenticado en /perfil: email={current_user.email}, rol={current_user.rol}, google_id={current_user.google_id}")
-            if current_user.rol == 'administrador':
-                app.logger.debug("Redirigiendo a admin_dashboard")
+            logger.debug(f"Usuario ya autenticado en /perfil: email={current_user.email}, rol={current_user.rol}, google_id={current_user.google_id}")
+            if current_user.rol.strip().lower() == 'administrador':
+                logger.debug("Redirigiendo a admin_dashboard")
                 return redirect(url_for('admin_dashboard'))
-            elif current_user.rol == 'cliente':
-                app.logger.debug("Redirigiendo a cliente_dashboard")
+            elif current_user.rol.strip().lower() == 'cliente':
+                logger.debug("Redirigiendo a cliente_dashboard")
                 return redirect(url_for('cliente_dashboard'))
             else:
-                app.logger.error(f"Rol inválido para {current_user.email}: {current_user.rol}")
+                logger.error(f"Rol inválido para {current_user.email}: {current_user.rol}")
                 flash("Rol de usuario inválido.", "error")
                 return redirect(url_for('index'))
 
         if not testing and (not google.authorized or 'google_oauth_token' not in session):
-            app.logger.debug("No hay token de Google, redirigiendo a google.login")
+            logger.debug("No hay token de Google, redirigiendo a google.login")
             return redirect(url_for("google_login"))
 
         try:
-            app.logger.debug("Obteniendo información de usuario desde Google")
+            logger.debug("Obteniendo información de usuario desde Google")
             resp = google.get("/oauth2/v3/userinfo")
             resp.raise_for_status()
             info = resp.json()
@@ -132,52 +140,54 @@ def create_app(testing=False):
             google_id = info.get("sub")
             imagen = info.get("picture")
 
-            app.logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
+            logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
+            # Buscar primero por email y google_id
             usuario_db = Usuario.query.filter_by(email=email, google_id=google_id).first()
             if not usuario_db:
+                # Si no se encuentra, buscar solo por email
                 usuario_db = Usuario.query.filter_by(email=email).first()
                 if usuario_db:
-                    app.logger.debug(f"Usuario encontrado por email, pero google_id no coincide: db={usuario_db.google_id}, google={google_id}")
+                    logger.debug(f"Usuario encontrado por email, pero google_id no coincide: db={usuario_db.google_id}, google={google_id}")
                     usuario_db.google_id = google_id
                     db.session.commit()
                 else:
-                    app.logger.debug(f"Usuario no registrado en la base de datos: email={email}")
+                    logger.debug(f"Usuario no registrado en la base de datos: email={email}")
                     flash("Usuario no registrado.", "error")
                     return redirect(url_for('index'))
 
-            app.logger.debug(f"Usuario encontrado: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
+            logger.debug(f"Usuario encontrado: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
             login_user(usuario_db, remember=True)
             session['google_oauth_token'] = google.token
             session['imagen_perfil'] = imagen
             session.modified = True
-            app.logger.debug(f"Usuario logueado: {usuario_db.email}, rol={usuario_db.rol}, token guardado")
+            logger.debug(f"Usuario logueado: {usuario_db.email}, rol={usuario_db.rol}, token guardado")
 
-            if usuario_db.rol == 'administrador':
-                app.logger.debug("Redirigiendo a admin_dashboard")
+            if usuario_db.rol.strip().lower() == 'administrador':
+                logger.debug("Redirigiendo a admin_dashboard")
                 return redirect(url_for('admin_dashboard'))
-            elif usuario_db.rol == 'cliente':
-                app.logger.debug("Redirigiendo a cliente_dashboard")
+            elif usuario_db.rol.strip().lower() == 'cliente':
+                logger.debug("Redirigiendo a cliente_dashboard")
                 return redirect(url_for('cliente_dashboard'))
             else:
-                app.logger.error(f"Rol inválido para {usuario_db.email}: {usuario_db.rol}")
+                logger.error(f"Rol inválido para {usuario_db.email}: {usuario_db.rol}")
                 flash("Rol de usuario inválido.", "error")
                 return redirect(url_for('index'))
 
         except Exception as e:
-            app.logger.error(f"Error al autenticar con Google: {str(e)}")
+            logger.error(f"Error al autenticar con Google: {str(e)}")
             flash(f"Error al autenticar con Google: {str(e)}", "error")
             return redirect(url_for('index'))
 
     @app.route('/admin/dashboard')
     @login_required
     def admin_dashboard():
-        app.logger.debug(f"Accediendo a admin_dashboard: email={current_user.email}, rol={current_user.rol}")
+        logger.debug(f"Accediendo a admin_dashboard: email={current_user.email}, rol={current_user.rol}")
         return render_template('admin_dashboard.html', nombre=current_user.nombre, rol=current_user.rol)
 
     @app.route('/cliente/dashboard')
     @login_required
     def cliente_dashboard():
-        app.logger.debug(f"Accediendo a cliente_dashboard: email={current_user.email}, rol={current_user.rol}")
+        logger.debug(f"Accediendo a cliente_dashboard: email={current_user.email}, rol={current_user.rol}")
         return render_template('cliente_dashboard.html', nombre=current_user.nombre, rol=current_user.rol)
 
     @app.route('/perfil/usuario')
@@ -185,16 +195,16 @@ def create_app(testing=False):
     def perfil_usuario():
         usuario_db = Usuario.query.filter_by(email=current_user.email).first()
         if not usuario_db:
-            app.logger.error(f"Usuario no encontrado en /perfil/usuario: email={current_user.email}")
+            logger.error(f"Usuario no encontrado en /perfil/usuario: email={current_user.email}")
             flash("Usuario no encontrado.", "error")
             return redirect(url_for('index'))
-        app.logger.debug(f"Mostrando perfil: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
+        logger.debug(f"Mostrando perfil: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
         return render_template('perfil.html', usuario=usuario_db, imagen=session.get('imagen_perfil'))
 
     @app.route('/logout')
     @login_required
     def logout():
-        app.logger.debug(f"Cerrando sesión para email={current_user.email}, rol={current_user.rol}")
+        logger.debug(f"Cerrando sesión para email={current_user.email}, rol={current_user.rol}")
         if 'google_oauth_token' in session:
             token = session.get('google_oauth_token').get('access_token')
             if token:
@@ -204,15 +214,17 @@ def create_app(testing=False):
                         params={"token": token},
                         headers={"Content-Type": "application/x-www-form-urlencoded"}
                     )
-                    app.logger.debug("Token de Google revocado")
+                    logger.debug("Token de Google revocado")
                 except Exception as e:
-                    app.logger.error(f"Error al revocar token de Google: {str(e)}")
+                    logger.error(f"Error al revocar token de Google: {str(e)}")
             session.pop('google_oauth_token', None)
+        # Limpiar cualquier estado de flask-dance
+        session.pop('google_oauth_state', None)
         logout_user()
         session.clear()
         response = make_response(redirect(url_for('index')))
         response.set_cookie('session', '', expires=0)
-        app.logger.debug("Sesión limpiada, redirigiendo a /index")
+        logger.debug("Sesión limpiada, redirigiendo a /index")
         return response
 
     from app.routes.admin import bp_admin
