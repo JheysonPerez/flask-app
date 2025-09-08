@@ -84,14 +84,15 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True
+            offline=True,
+            prompt="select_account"  # Forzar selección de cuenta
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
         @oauth_before_login.connect
         def before_google_login(blueprint, url):
             logger.debug(f"URL de autorización original: {url}")
-            if 'prompt' not in url:
+            if 'prompt=select_account' not in url:
                 url += "&prompt=select_account"
             logger.debug(f"URL de autorización modificada: {url}")
             return url
@@ -100,6 +101,7 @@ def create_app(testing=False):
     def index():
         logger.debug("Accediendo a /index, renderizando login.html")
         session.pop('google_oauth_token', None)
+        session.pop('google_oauth_state', None)
         session.modified = True
         return render_template('login.html')
 
@@ -141,17 +143,17 @@ def create_app(testing=False):
             imagen = info.get("picture")
 
             logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
-            # Buscar primero por email y google_id
-            usuario_db = Usuario.query.filter_by(email=email, google_id=google_id).first()
+            # Buscar usuario por google_id únicamente
+            usuario_db = Usuario.query.filter_by(google_id=google_id).first()
             if not usuario_db:
-                # Si no se encuentra, buscar solo por email
+                # Si no se encuentra por google_id, buscar por email
                 usuario_db = Usuario.query.filter_by(email=email).first()
                 if usuario_db:
-                    logger.debug(f"Usuario encontrado por email, pero google_id no coincide: db={usuario_db.google_id}, google={google_id}")
+                    logger.debug(f"Usuario encontrado por email, actualizando google_id: db={usuario_db.google_id}, google={google_id}")
                     usuario_db.google_id = google_id
                     db.session.commit()
                 else:
-                    logger.debug(f"Usuario no registrado en la base de datos: email={email}")
+                    logger.debug(f"Usuario no registrado en la base de datos: email={email}, google_id={google_id}")
                     flash("Usuario no registrado.", "error")
                     return redirect(url_for('index'))
 
@@ -218,7 +220,6 @@ def create_app(testing=False):
                 except Exception as e:
                     logger.error(f"Error al revocar token de Google: {str(e)}")
             session.pop('google_oauth_token', None)
-        # Limpiar cualquier estado de flask-dance
         session.pop('google_oauth_state', None)
         logout_user()
         session.clear()
