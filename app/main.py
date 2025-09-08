@@ -69,10 +69,12 @@ def create_app(testing=False):
     @app.route('/')
     def index():
         if current_user.is_authenticated:
-            app.logger.debug(f"Usuario autenticado: {current_user.email}, rol: {current_user.rol}")
-            if current_user.rol == 'administrador':
-                return redirect(url_for('admin_dashboard'))
-            return redirect(url_for('cliente_dashboard'))
+            usuario = Usuario.query.filter_by(id=current_user.id).first()
+            if usuario:
+                app.logger.debug(f"Usuario autenticado: {usuario.email}, rol: {usuario.rol}")
+                if usuario.rol == 'administrador':
+                    return redirect(url_for('admin_dashboard'))
+                return redirect(url_for('cliente_dashboard'))
         app.logger.debug("Usuario no autenticado, renderizando login.html")
         return render_template('login.html')
 
@@ -150,11 +152,10 @@ def create_app(testing=False):
         # Cierra sesión de Flask-Login
         logout_user()
 
-        # Limpia la sesión de Flask
+        # Limpia la sesión completamente
         session.clear()
-
-        # Asegura eliminar cualquier token de Google
         session.pop('google_oauth_token', None)
+        session.modified = True  # 🔑 fuerza invalidar cookie
 
         flash("Sesión cerrada correctamente.", "success")
         return redirect(url_for('index'))
