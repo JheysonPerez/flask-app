@@ -147,8 +147,16 @@ def create_app(testing=False):
     @app.route('/logout')
     @login_required
     def logout():
+        # Cierra sesión de Flask-Login
         logout_user()
+
+        # Limpia la sesión de Flask
         session.clear()
+
+        # Asegura eliminar cualquier token de Google
+        session.pop('google_oauth_token', None)
+
+        flash("Sesión cerrada correctamente.", "success")
         return redirect(url_for('index'))
 
     from app.routes.admin import bp_admin
