@@ -84,8 +84,7 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True,
-            prompt="select_account"  # Forzar selección de cuenta
+            offline=True
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -143,19 +142,18 @@ def create_app(testing=False):
             imagen = info.get("picture")
 
             logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
-            # Buscar usuario por google_id únicamente
-            usuario_db = Usuario.query.filter_by(google_id=google_id).first()
+            # Buscar usuario por email primero, ya que google_id puede no coincidir
+            usuario_db = Usuario.query.filter_by(email=email).first()
             if not usuario_db:
-                # Si no se encuentra por google_id, buscar por email
-                usuario_db = Usuario.query.filter_by(email=email).first()
-                if usuario_db:
-                    logger.debug(f"Usuario encontrado por email, actualizando google_id: db={usuario_db.google_id}, google={google_id}")
-                    usuario_db.google_id = google_id
-                    db.session.commit()
-                else:
-                    logger.debug(f"Usuario no registrado en la base de datos: email={email}, google_id={google_id}")
-                    flash("Usuario no registrado.", "error")
-                    return redirect(url_for('index'))
+                logger.debug(f"Usuario no registrado en la base de datos: email={email}, google_id={google_id}")
+                flash("Usuario no registrado.", "error")
+                return redirect(url_for('index'))
+
+            # Actualizar google_id si no coincide
+            if usuario_db.google_id != google_id:
+                logger.debug(f"Actualizando google_id para email={email}: de {usuario_db.google_id} a {google_id}")
+                usuario_db.google_id = google_id
+                db.session.commit()
 
             logger.debug(f"Usuario encontrado: email={usuario_db.email}, rol={usuario_db.rol}, google_id={usuario_db.google_id}")
             login_user(usuario_db, remember=True)
