@@ -1,11 +1,12 @@
 import os
-from flask import Flask, redirect, url_for, render_template, session, flash
+from flask import Flask, redirect, url_for, render_template, session, flash, make_response
 from dotenv import load_dotenv
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_dance.contrib.google import make_google_blueprint, google
 from app.extensions import db, jwt, mail
 from app.models.usuario import Usuario
 from app.routes.categoria import bp_categoria
+from sqlalchemy.exc import OperationalError
 
 load_dotenv()
 
@@ -44,7 +45,15 @@ def create_app(testing=False):
         app.config['SESSION_COOKIE_SAMESITE'] = 'None'
         app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-    db.init_app(app)
+    try:
+        db.init_app(app)
+        with app.app_context():
+            db.session.execute("SELECT 1")
+            app.logger.debug("Conexión a la base de datos exitosa")
+    except OperationalError as e:
+        app.logger.error(f"Error al conectar con la base de datos: {str(e)}")
+        raise
+
     jwt.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
@@ -62,7 +71,8 @@ def create_app(testing=False):
                 "https://www.googleapis.com/auth/userinfo.email"
             ],
             redirect_to="perfil",
-            offline=True
+            offline=True,
+            prompt="select_account"  # Forzar selección de cuenta
         )
         app.register_blueprint(google_bp, url_prefix="/login")
 
@@ -146,11 +156,28 @@ def create_app(testing=False):
     @login_required
     def logout():
         app.logger.debug("Cerrando sesión")
+        # Revocar token de Google si existe
+        if 'google_oauth_token' in session:
+            token = session.get('google_oauth_token').get('access_token')
+            if token:
+                try:
+                    google.post(
+                        "https://accounts.google.com/o/oauth2/revoke",
+                        params={"token": token},
+                        headers={"Content-Type": "application/x-www-form-urlencoded"}
+                    )
+                    app.logger.debug("Token de Google revocado")
+                except Exception as e:
+                    app.logger.error(f"Error al revocar token de Google: {str(e)}")
+            session.pop('google_oauth_token', None)
+        # Limpiar sesión de Flask y Flask-Login
         logout_user()
-        session.pop('google_oauth_token', None)
         session.clear()
+        # Limpiar cookies de sesión
+        response = make_response(redirect(url_for('index')))
+        response.set_cookie('session', '', expires=0)
         app.logger.debug("Sesión limpiada, redirigiendo a /index")
-        return redirect(url_for('index'))
+        return response
 
     from app.routes.admin import bp_admin
     from app.routes.cliente import bp_cliente
