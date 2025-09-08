@@ -99,10 +99,13 @@ def create_app(testing=False):
     @app.route('/')
     def index():
         logger.debug("Accediendo a /index, renderizando login.html")
-        session.pop('google_oauth_token', None)
-        session.pop('google_oauth_state', None)
-        session.modified = True
-        return render_template('login.html')
+        if current_user.is_authenticated:
+            logger.debug(f"Usuario autenticado en /index, cerrando sesión: {current_user.email}")
+            logout_user()
+        session.clear()
+        response = make_response(render_template('login.html'))
+        response.set_cookie('session', '', expires=0)
+        return response
 
     @app.route('/login/google')
     def google_login():
@@ -114,20 +117,13 @@ def create_app(testing=False):
 
     @app.route('/perfil')
     def perfil():
+        # Forzar logout si hay un usuario autenticado para evitar sesiones antiguas
         if current_user.is_authenticated:
-            logger.debug(f"Usuario ya autenticado en /perfil: email={current_user.email}, rol={current_user.rol}, google_id={current_user.google_id}")
-            if current_user.rol.strip().lower() == 'administrador':
-                logger.debug("Redirigiendo a admin_dashboard")
-                return redirect(url_for('admin_dashboard'))
-            elif current_user.rol.strip().lower() == 'cliente':
-                logger.debug("Redirigiendo a cliente_dashboard")
-                return redirect(url_for('cliente_dashboard'))
-            else:
-                logger.error(f"Rol inválido para {current_user.email}: {current_user.rol}")
-                flash("Rol de usuario inválido.", "error")
-                return redirect(url_for('index'))
+            logger.debug(f"Usuario autenticado en /perfil, forzando logout: email={current_user.email}")
+            logout_user()
+            session.clear()
 
-        if not testing and (not google.authorized or 'google_oauth_token' not in session):
+        if not google.authorized or 'google_oauth_token' not in session:
             logger.debug("No hay token de Google, redirigiendo a google.login")
             return redirect(url_for("google_login"))
 
@@ -142,7 +138,7 @@ def create_app(testing=False):
             imagen = info.get("picture")
 
             logger.debug(f"Usuario de Google: email={email}, google_id={google_id}")
-            # Buscar usuario por email primero, ya que google_id puede no coincidir
+            # Buscar usuario por email
             usuario_db = Usuario.query.filter_by(email=email).first()
             if not usuario_db:
                 logger.debug(f"Usuario no registrado en la base de datos: email={email}, google_id={google_id}")
@@ -217,8 +213,6 @@ def create_app(testing=False):
                     logger.debug("Token de Google revocado")
                 except Exception as e:
                     logger.error(f"Error al revocar token de Google: {str(e)}")
-            session.pop('google_oauth_token', None)
-        session.pop('google_oauth_state', None)
         logout_user()
         session.clear()
         response = make_response(redirect(url_for('index')))
