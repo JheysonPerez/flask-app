@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Administrador{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h1 class="mb-4">Bienvenido administrador, {{ nombre }}</h1>
+
+    <div class="d-flex gap-3">
+        <a href="{{ url_for('perfil_usuario') }}" class="btn btn-outline-primary">Ver perfil</a>
+        <a href="{{ url_for('bp_admin.listar_clientes') }}" class="btn btn-outline-success">Gestionar Clientes</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Cerrar sesión</a>
+    </div>
+</div>
+{% endblock %}

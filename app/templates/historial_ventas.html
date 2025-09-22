@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Ventas{% endblock %}
+
+{% block content %}
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h2>Historial de Ventas</h2>
+
+    {% if historial %}
+        <table class="table table-bordered mt-3 align-middle">
+            <thead class="thead-light">
+                <tr>
+                    <th>Venta</th>
+                    <th>Tipo Comprobante</th>
+                    <th>Total Venta</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in historial %}
+                <tr>
+                    <td>Venta {{ venta.id }}</td>
+                    <td>{{ venta.tipo_comprobante.nombre }}</td>
+                    <td>S/ {{ venta.total_venta }}</td>
+                    <td>{{ venta.fecha_venta.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>
+                        <a href="{{ url_for('compra.detalle_compra', compra_id=venta.id, next='historial') }}" class="btn btn-sm btn-primary">
+                            Más detalles
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No se encontraron ventas registradas.</p>
+    {% endif %}
+
+    <div class="mt-4 d-flex justify-content-between">
+        <a href="{{ url_for('cliente_dashboard') }}" class="btn btn-secondary">Volver</a>
+        <a href="{{ url_for('dashboard_ventas.dashboard_ventas') }}" class="btn btn-info">Ver estadísticas</a>
+    </div>
+
+</div>
+{% endblock %}

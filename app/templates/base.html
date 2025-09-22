@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Panel{% endblock %}</title>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Tu archivo de estilos -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <!-- Botones para cambiar el tema -->
+  <div class="container mt-3 text-end">
+    <!-- Botón para activar modo oscuro -->
+    <button class="btn btn-dark btn-sm" onclick="setDarkMode()" id="dark-btn">Modo Oscuro</button>
+    <!-- Botón para activar modo claro (oculto inicialmente) -->
+    <button class="btn btn-light btn-sm" onclick="setLightMode()" id="light-btn" style="display: none;">Modo Claro</button>
+  </div>
+
+  <!-- Mensajes flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Contenido principal que extienden tus otras plantillas -->
+  {% block content %}{% endblock %}
+
+  <!-- Script para manejar el cambio de tema -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const isDark = localStorage.getItem("dark-mode") === "true";
+      if (isDark) {
+        document.body.classList.add("dark-mode");
+        document.getElementById("dark-btn").style.display = "none";
+        document.getElementById("light-btn").style.display = "inline-block";
+      } else {
+        document.body.classList.remove("dark-mode");
+        document.getElementById("dark-btn").style.display = "inline-block";
+        document.getElementById("light-btn").style.display = "none";
+      }
+    });
+
+    function setDarkMode() {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("dark-mode", true);
+      document.getElementById("dark-btn").style.display = "none";
+      document.getElementById("light-btn").style.display = "inline-block";
+    }
+
+    function setLightMode() {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("dark-mode", false);
+      document.getElementById("dark-btn").style.display = "inline-block";
+      document.getElementById("light-btn").style.display = "none";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Carrito de Compras{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h2>Tu Estante Virtual</h2>
+
+    {% if productos_carrito %}
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productos_carrito %}
+                <tr data-producto-id="{{ item.producto.id }}">
+                    <td>{{ item.producto.nombre }}</td>
+                    <td class="precio-unitario">${{ "%.2f"|format(item.producto.precio) }}</td>
+                    <td style="width: 160px;">
+                        <form action="{{ url_for('producto.editar_cantidad_carrito', producto_id=item.producto.id) }}" method="POST" class="d-flex flex-column cantidad-form">
+                            <div class="d-flex">
+                                <input type="number"
+                                       name="cantidad"
+                                       value="{{ item.cantidad }}"
+                                       min="1"
+                                       max="{{ item.producto.stock }}"
+                                       class="form-control me-2 cantidad-input"
+                                       style="color: black; background-color: white; width: 70px;"
+                                       required>
+                            </div>
+                            {% if item.cantidad > item.producto.stock %}
+                                <small class="text-danger mt-1">Cantidad máxima: {{ item.producto.stock }}</small>
+                            {% endif %}
+                        </form>
+                    </td>
+                    <td class="subtotal">${{ "%.2f"|format(item.subtotal) }}</td>
+                    <td>
+                        <form action="{{ url_for('producto.eliminar_producto_carrito', producto_id=item.producto.id) }}" method="POST">
+                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Total</th>
+                    <th id="total">${{ "%.2f"|format(total) }}</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <form action="{{ url_for('compra.comprar') }}" method="POST" class="mt-4">
+            <h4>Confirmar Compra</h4>
+
+            <div class="mb-3">
+                <label for="tipo_comprobante" class="form-label">Seleccione el tipo de comprobante:</label>
+                <select name="tipo_comprobante" id="tipo_comprobante" class="form-select" required>
+                    <option value="" disabled selected>-- Elija una opción --</option>
+                    <option value="boleta">Boleta</option>
+                    <option value="factura">Factura</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico:</label>
+                <input type="email" name="email_destino" id="email" class="form-control" required>
+            </div>
+
+            <div id="campos_factura" class="d-none">
+                <div class="mb-3">
+                    <label for="ruc" class="form-label">RUC:</label>
+                    <input type="text" name="ruc" id="ruc" class="form-control" maxlength="11" pattern="[0-9]{11}" title="Debe contener 11 dígitos numéricos">
+                </div>
+            </div>
+
+            <div id="campos_boleta" class="d-none">
+                <div class="mb-3">
+                    <label for="dni" class="form-label">DNI:</label>
+                    <input type="text" name="dni" id="dni" class="form-control" maxlength="8" pattern="[0-9]{8}" title="Debe contener 8 dígitos numéricos">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Confirmar Compra</button>
+        </form>
+
+        <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-secondary mt-3">Seguir comprando</a>
+
+    {% else %}
+        <p>Tu estante virtual está vacío.</p>
+        <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-primary">Ver productos</a>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Mostrar/ocultar campos comprobante
+    const tipoSelect = document.getElementById('tipo_comprobante');
+    const facturaFields = document.getElementById('campos_factura');
+    const boletaFields = document.getElementById('campos_boleta');
+
+    function actualizarCampos() {
+        const tipo = tipoSelect.value;
+        facturaFields.classList.add('d-none');
+        boletaFields.classList.add('d-none');
+
+        if (tipo === 'factura') {
+            facturaFields.classList.remove('d-none');
+        } else if (tipo === 'boleta') {
+            boletaFields.classList.remove('d-none');
+        }
+    }
+
+    tipoSelect.addEventListener('change', actualizarCampos);
+    actualizarCampos();
+
+    // Actualiza cantidad y envía el formulario automáticamente
+    const cantidadInputs = document.querySelectorAll('.cantidad-input');
+
+    cantidadInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            let max = parseInt(input.getAttribute('max'));
+            let val = parseInt(input.value);
+            if (val > max) {
+                input.value = max;
+            } else if (val < 1 || isNaN(val)) {
+                input.value = 1;
+            }
+
+            // ENVÍA EL FORMULARIO DE ESA CANTIDAD
+            input.closest('form').submit();
+        });
+    });
+});
+</script>
+{% endblock %}

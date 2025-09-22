@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Boleta #{{ compra.id }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 5px 0; border-bottom: 1px solid #ddd; }
+    strong { display: inline-block; width: 150px; }
+  </style>
+</head>
+<body>
+  <h1>Detalle de Boleta #{{ compra.id }}</h1>
+
+  <ul>
+    <li><strong>ID Compra:</strong> {{ compra.id }}</li>
+    <li><strong>Tipo Comprobante:</strong> {{ compra.tipo_comprobante.nombre if compra.tipo_comprobante else 'N/A' }}</li>
+    <li><strong>Nombre y Apellidos:</strong> {{ compra.nombre_apellidos if compra.nombre_apellidos else 'N/A' }}</li>
+    <li><strong>Email Destino:</strong> {{ compra.email_destino if compra.email_destino else 'N/A' }}</li>
+    <li><strong>Total:</strong> S/. {{ "%.2f"|format(compra.total) if compra.total else 'N/A' }}</li>
+    <li><strong>Fecha:</strong> {{ compra.fecha.strftime('%Y-%m-%d %H:%M') if compra.fecha else 'N/A' }}</li>
+  </ul>
+
+  <h2>Productos</h2>
+  {% if compra.productos %}
+    <ul>
+      {% for detalle in compra.productos %}
+        <li>
+          <strong>Nombre:</strong> {{ detalle.producto.nombre if detalle.producto else 'N/A' }}<br>
+          <strong>Marca:</strong> {{ detalle.producto.marca if detalle.producto and detalle.producto.marca else 'N/A' }}<br>
+          <strong>Cantidad:</strong> {{ detalle.cantidad if detalle.cantidad else 'N/A' }}<br>
+          <strong>Precio Unitario:</strong>
+          {% if detalle.producto and detalle.producto.precio %}
+            S/. {{ "%.2f"|format(detalle.producto.precio) }}
+          {% else %}
+            N/A
+          {% endif %}<br>
+          <strong>Subtotal:</strong>
+          {% if detalle.producto and detalle.producto.precio %}
+            S/. {{ "%.2f"|format(detalle.cantidad * detalle.producto.precio) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay productos asociados a esta compra.</p>
+  {% endif %}
+</body>
+</html>

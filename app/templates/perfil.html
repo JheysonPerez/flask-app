@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del Usuario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+</head>
+<body>
+    <div class="perfil-box">
+        {% if imagen %}
+        <img class="perfil" src="{{ imagen }}" alt="Foto de perfil de {{ usuario.nombre }}">
+        {% else %}
+        <img class="perfil" src="{{ url_for('static', filename='default-profile.png') }}" alt="Foto de perfil predeterminada">
+        {% endif %}
+        
+        <h1>Bienvenido, {{ usuario.nombre }}</h1>
+        <p>Email: {{ usuario.email }}</p>
+        <p>Rol: {{ usuario.rol }}</p>
+
+        {% if usuario.rol == 'administrador' %}
+            <a href="{{ url_for('admin_dashboard') }}" class="btn-volver">Volver al Inicio</a>
+        {% else %}
+            <a href="{{ url_for('cliente_dashboard') }}" class="btn-volver">Volver al Inicio</a>
+        {% endif %}
+    </div>
+</body>
+</html>

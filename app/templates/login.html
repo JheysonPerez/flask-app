@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión Sheriff Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Imagen de fondo -->
+        <div class="image-section">
+            <div class="overlay">
+                <h1 class="title">Bienvenido a Sheriff Store</h1>
+                <p class="subtitle">Tu lugar ideal para comprar tecnología</p>
+            </div>
+        </div>
+
+        <!-- Formulario de login -->
+        <div class="login-section">
+            <div class="login-container">
+                <h2>¡Hola de nuevo!</h2>
+                <p>Ingresa para comenzar tus compras</p>
+                <a class="login-btn" href="{{ url_for('google.login') }}">
+                    Iniciar sesión con Google
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

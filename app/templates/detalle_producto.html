@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4 position-relative" style="z-index: 1;">
+    <h2>Detalle del Producto</h2>
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                {% if producto.imagen_url %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ producto.imagen_url) }}" alt="Imagen del producto" class="img-fluid rounded-start" style="max-height: 200px; object-fit: contain;">
+                {% else %}
+                    <img src="{{ url_for('static', filename='no-image.png') }}" alt="Sin imagen" class="img-fluid rounded-start" style="max-height: 200px; object-fit: contain;">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text"><strong>Descripción:</strong> {{ producto.descripcion or 'No hay descripción' }}</p>
+                    <p class="card-text"><strong>Precio:</strong> ${{ '%.2f' % producto.precio }}</p>
+                    <p class="card-text"><strong>Stock:</strong> {{ producto.stock }}</p>
+                    <p class="card-text"><strong>Categoría:</strong> {{ producto.categoria.nombre if producto.categoria else 'Sin categoría' }}</p>
+                    <p class="card-text"><strong>Marca:</strong> {{ producto.marca or 'No especificada' }}</p>
+
+                    <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-primary">Volver a productos</a>
+
+                    {% if current_user.is_authenticated and producto.cliente_id == current_user.id|int %}
+                        <a href="{{ url_for('producto.editar_producto', producto_id=producto.id) }}" class="btn btn-warning">Actualizar</a>
+                        
+                        <form method="POST" action="{{ url_for('producto.eliminar_producto', producto_id=producto.id) }}" style="display:inline;" onsubmit="return confirm('¿Estás seguro que quieres eliminar este producto?');">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

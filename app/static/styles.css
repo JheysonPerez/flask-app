@@ -1,0 +1,129 @@
+/* ==============================
+   Variables de color
+   ============================== */
+:root {
+    --bg-color: #f4f4f4;
+    --text-color: #000000;
+    --login-bg: #ffffff;
+    --btn-bg: #4285F4;
+    --btn-hover: #3367d6;
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+/* Modo oscuro: redefine las variables */
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --login-bg: #1e1e1e;
+    --btn-bg: #3367d6;
+    --btn-hover: #4285F4;
+    --overlay-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* ==============================
+   Reset básico y fuentes
+   ============================== */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==============================
+   Layout principal
+   ============================== */
+.main-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* ==============================
+   Sección de imagen
+   ============================== */
+.image-section {
+    flex: 2;
+    background-image: url('/static/images/portada.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: white;
+}
+
+/* Caja de texto sobre la imagen */
+.overlay {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    background-color: var(--overlay-bg);
+    padding: 20px 30px;
+    border-radius: 10px;
+}
+
+.title {
+    font-size: 2.8em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 1.3em;
+    margin-top: 8px;
+}
+
+/* ==============================
+   Sección de login
+   ============================== */
+.login-section {
+    flex: 1;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Caja del formulario de login */
+.login-container {
+    background-color: var(--login-bg);
+    padding: 50px 40px;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.login-container h2 {
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.login-container p {
+    color: var(--text-color);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+/* ==============================
+   Botón de login
+   ============================== */
+.login-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    font-size: 16px;
+    background-color: var(--btn-bg);
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    border: none;
+}
+
+.login-btn:hover {
+    background-color: var(--btn-hover);
+}

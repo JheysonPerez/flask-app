@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard de Ventas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Dashboard de Ventas</h2>
+
+    <!-- Botón para volver -->
+    <a href="{{ url_for('historial_ventas.mostrar_historial_ventas') }}" class="btn btn-secondary mb-4">Volver al historial</a>
+
+    <!-- Selector de filtro para agrupación -->
+    <div class="mb-3 d-flex align-items-center gap-3">
+        <div>
+            <label for="filtro-agrupacion" class="form-label me-2">Agrupar ventas por:</label>
+            <select id="filtro-agrupacion" class="form-select w-auto">
+                <option value="dia" {% if agrupacion == 'dia' %}selected{% endif %}>Día</option>
+                <option value="semana" {% if agrupacion == 'semana' %}selected{% endif %}>Semana</option>
+                <option value="mes" {% if agrupacion == 'mes' %}selected{% endif %}>Mes</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Gráfico de línea -->
+    <div class="mb-3">
+        <h5>Ventas por Fecha</h5>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <!-- Filtro dinámico para gráfico circular -->
+    <div class="mb-3 d-flex align-items-center gap-3">
+        <div>
+            <label for="filtro-dinamico" class="form-label me-2">Filtro para gráfico circular:</label>
+            <select id="filtro-dinamico" class="form-select w-auto">
+                <option value="producto" {% if filtro == 'producto' %}selected{% endif %}>Producto</option>
+                <option value="marca" {% if filtro == 'marca' %}selected{% endif %}>Marca</option>
+                <option value="categoria" {% if filtro == 'categoria' %}selected{% endif %}>Categoría</option>
+                <option value="tipo_comprobante" {% if filtro == 'tipo_comprobante' %}selected{% endif %}>Tipo Comprobante</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Gráfico circular -->
+    <div class="mb-5">
+        <h5>Distribución (%) - {{ filtro.replace('_', ' ').capitalize() }}</h5>
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<!-- Cargar Chart.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const fechas = {{ fechas | tojson | safe }};
+    const montos = {{ montos | tojson | safe }};
+    const agrupacion = "{{ agrupacion }}";
+
+    const nombresGrafico = {{ nombres_grafico | tojson | safe }};
+    const porcentajesGrafico = {{ porcentajes_grafico | tojson | safe }};
+    const cantidadesGrafico = {{ cantidades_grafico | tojson | safe }};
+
+    // Gráfico de línea: Ventas por Fecha
+    new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+            labels: fechas,
+            datasets: [{
+                label: 'Monto de Venta',
+                data: montos,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: agrupacion === "dia" ? "Hora" : (agrupacion === "semana" ? "Día" : "Mes")
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Monto (S/.)'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Gráfico circular: Distribución según filtro dinámico
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+            labels: nombresGrafico,
+            datasets: [{
+                label: 'Distribución (%)',
+                data: porcentajesGrafico,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(153, 102, 255, 0.6)',
+                    'rgba(255, 159, 64, 0.6)',
+                    'rgba(54, 162, 235, 0.6)'
+                ],
+                borderColor: 'rgba(255, 255, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Distribución de Ventas por {{ filtro.replace("_", " ").capitalize() }} (%)'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const porcentaje = context.raw;
+                            const index = context.dataIndex;
+                            const cantidad = cantidadesGrafico[index];
+                            return `${label}: ${porcentaje}% (${cantidad} ventas)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Eventos para cambiar filtros
+    document.getElementById('filtro-agrupacion').addEventListener('change', function() {
+        const valor = this.value;
+        const url = new URL(window.location);
+        url.searchParams.set('agrupacion', valor);
+        url.searchParams.set('filtro', document.getElementById('filtro-dinamico').value);
+        window.location.href = url.toString();
+    });
+
+    document.getElementById('filtro-dinamico').addEventListener('change', function() {
+        const valor = this.value;
+        const url = new URL(window.location);
+        url.searchParams.set('filtro', valor);
+        url.searchParams.set('agrupacion', document.getElementById('filtro-agrupacion').value);
+        window.location.href = url.toString();
+    });
+</script>
+{% endblock %}
