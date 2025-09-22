@@ -91,7 +91,7 @@ INSERT INTO usuarios (id, google_id, nombre, email, rol, estado)
 VALUES
     (1, 'admin-google-id-1', 'Jheyson Perez', 'jheysonperezramirez6@gmail.com', 'administrador', 'activo'),
     (2, 'cliente-google-id-2', 'Jheyson Perez Ramirez', 'jheyson.xcalibur.15@gmail.com', 'cliente', 'activo'),
-    (3, 'cliente-google-id-3', 'Efer Tello', 'efer.tello.nav@gmial.com', 'cliente', 'activo'),
+    (3, 'cliente-google-id-3', 'Efer Tello', 'efer.tello.nav@gmail.com', 'cliente', 'activo'),
     (4, 'cliente-google-id-4', 'Cristian Araujo', 'cristianaraujodavila@gmail.com', 'cliente', 'activo'),
     (5, 'cliente-google-id-5', 'Diogo Alipazaga', 'diogoalipazaga@gmail.com', 'cliente', 'activo'),
     (6, 'cliente-google-id-6', 'FranK Carrion', 'frankcarrion35@gmail.com', 'cliente', 'activo')
