@@ -1,4 +1,3 @@
-# app/routes/auth.py
 import os
 from flask import Blueprint, request, jsonify
 from flask_login import login_user
@@ -36,19 +35,10 @@ def register():
         db.session.rollback()
         return jsonify({"msg": f"Error al registrar el usuario: {e}"}), 500
 
-# Login con Google OAuth (bypass por email solo en entorno de prueba)
+# Login con Google OAuth
 @auth_bp.route("/login/google", methods=["POST"])
 def login_google():
     data = request.get_json(silent=True) or {}
-
-    # Bypass para pruebas de carga (si se manda el email directamente)
-    if "email" in data and os.getenv("FLASK_ENV") in {"development", "testing"}:
-        usuario = Usuario.query.filter_by(email=data["email"]).first()
-        if not usuario:
-            return jsonify({"msg": "Usuario no registrado"}), 401
-        login_user(usuario)
-        access_token = create_access_token(identity=usuario.id)
-        return jsonify({"access_token": access_token, "rol": usuario.rol}), 200
 
     token_google = data.get("credential")
     if not token_google:
@@ -57,13 +47,21 @@ def login_google():
     try:
         id_info = id_token.verify_oauth2_token(token_google, google_requests.Request())
         email = id_info.get("email")
+        nombre = id_info.get("name", "Usuario")
 
         if not email:
             return jsonify({"msg": "No se pudo obtener el correo electrónico"}), 400
 
         usuario = Usuario.query.filter_by(email=email).first()
         if not usuario:
-            return jsonify({"msg": "Usuario no registrado"}), 401
+            # Crear usuario automáticamente si no existe
+            usuario = Usuario(
+                nombre=nombre,
+                email=email,
+                rol="cliente"
+            )
+            db.session.add(usuario)
+            db.session.commit()
 
         login_user(usuario)
         access_token = create_access_token(identity=usuario.id)
