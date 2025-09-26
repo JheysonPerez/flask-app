@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <title>Iniciar Sesión Sheriff Store</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Font Awesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* Estilo para los iconos sociales */
+        .social-icons {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.2);
+            color: #ffcc00;
+        }
+    </style>
 </head>
 <body>
     <div class="main-container">
@@ -25,6 +50,14 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <!-- Iconos sociales abajo a la izquierda -->
+    <div class="social-icons">
+        <a href="https://www.facebook.com/jheyson.perez.560" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://wa.me/51905921931" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://www.instagram.com/jheysonperez_15/" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@jheysonperez_15" target="_blank"><i class="fab fa-tiktok"></i></a>
     </div>
 </body>
 </html>

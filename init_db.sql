@@ -95,6 +95,7 @@ VALUES
     (4, 'cliente-google-id-4', 'Cristian Araujo', 'cristianaraujodavila@gmail.com', 'cliente', 'activo'),
     (5, 'cliente-google-id-5', 'Diogo Alipazaga', 'diogoalipazaga@gmail.com', 'cliente', 'activo'),
     (6, 'cliente-google-id-6', 'FranK Carrion', 'frankcarrion35@gmail.com', 'cliente', 'activo')
+ON CONFLICT (id) DO NOTHING;   -- << ✅ agregado ; y manejo de conflicto
 
 -- Insertar tipos de comprobante
 INSERT INTO tipos_comprobante (id, nombre)
