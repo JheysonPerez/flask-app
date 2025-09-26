@@ -8,18 +8,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* Estilo para los iconos sociales */
-        .social-icons {
+        .social-container {
             position: fixed;
             bottom: 20px;
             left: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            align-items: flex-start;
+            color: white;
+        }
+
+        .social-container p {
+            font-size: 16px;
+            margin: 0 0 8px 0;
+            font-weight: bold;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
         }
 
         .social-icons a {
             color: white;
-            font-size: 24px;
+            font-size: 30px; /* tamaño más grande */
             text-decoration: none;
             transition: transform 0.2s ease, color 0.2s ease;
         }
@@ -53,11 +65,14 @@
     </div>
 
     <!-- Iconos sociales abajo a la izquierda -->
-    <div class="social-icons">
-        <a href="https://www.facebook.com/jheyson.perez.560" target="_blank"><i class="fab fa-facebook"></i></a>
-        <a href="https://wa.me/51905921931" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a href="https://www.instagram.com/jheysonperez_15/" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="https://www.tiktok.com/@jheysonperez_15" target="_blank"><i class="fab fa-tiktok"></i></a>
+    <div class="social-container">
+        <p>Contáctenos</p>
+        <div class="social-icons">
+            <a href="https://www.facebook.com/jheyson.perez.560" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://wa.me/51905921931" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/jheysonperez_15/" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@jheysonperez_15" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
     </div>
 </body>
 </html>
