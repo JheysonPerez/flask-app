@@ -274,7 +274,7 @@ def ver_carrito():
 @login_required
 @validate_active_cliente
 def filtro_productos():
-    query = db.session.query(Producto).join(Categoria)
+    query = db.session.query(Producto).join(Categoria).filter(Producto.cliente_id == current_user.id)
     nombre = request.args.get('nombre', '').strip()
     marca = request.args.get('marca', '').strip()
     categoria_texto = request.args.get('categoria', '').strip()
@@ -294,7 +294,6 @@ def filtro_productos():
 
     productos = query.all()
     return render_template('mis_productos.html', productos=productos)
-
 
 @producto_bp.route('/productos', methods=['GET'])
 def api_productos_publicos():
