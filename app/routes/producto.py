@@ -1,6 +1,6 @@
-import sys
 import os
 import logging
+import uuid
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, current_app, session, flash
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -55,7 +55,7 @@ def validate_active_cliente(func):
 @login_required
 @validate_active_cliente
 def nuevo_producto():
-    categorias = Categoria.query.all()
+    categorias = Categoria.query.filter_by(cliente_id=current_user.id).all()
     marcas = Marca.query.filter_by(cliente_id=current_user.id).all()
     logger.info(f"[nuevo_producto] Usuario {current_user.id} accede con {len(categorias)} categorías y {len(marcas)} marcas")
     return render_template('nuevo_producto.html', categorias=categorias, marcas=marcas)
@@ -70,8 +70,9 @@ def nuevo_producto():
 def crear_producto():
     data = request.form
     categoria_nombre = data.get('categoria_nombre', '').strip()
-    marca_nombre = data.get('marca', '').strip()
+    marca_nombre = data.get('marca_nombre', '').strip()
 
+    # Validaciones básicas
     if not all([data.get('nombre'), data.get('precio'), data.get('stock'), categoria_nombre, marca_nombre]):
         return jsonify({'msg': 'Todos los campos obligatorios deben completarse'}), 400
 
@@ -83,7 +84,7 @@ def crear_producto():
     except ValueError:
         return jsonify({'msg': 'Precio o stock inválidos'}), 400
 
-    # ✅ Categoría
+    # Categoría
     categoria = Categoria.query.filter_by(nombre=categoria_nombre, cliente_id=current_user.id).first()
     if not categoria:
         if len(categoria_nombre) < 3:
@@ -92,7 +93,7 @@ def crear_producto():
         db.session.add(categoria)
         db.session.commit()
 
-    # ✅ Marca
+    # Marca
     marca = Marca.query.filter_by(nombre=marca_nombre, cliente_id=current_user.id).first()
     if not marca:
         if len(marca_nombre) < 2:
@@ -101,7 +102,7 @@ def crear_producto():
         db.session.add(marca)
         db.session.commit()
 
-    # 📸 Imagen
+    # Imagen
     imagen_nombre = None
     file = request.files.get('imagen')
     if file and allowed_file(file.filename):
@@ -109,14 +110,14 @@ def crear_producto():
         if file.tell() > MAX_FILE_SIZE:
             return jsonify({'msg': 'Archivo excede el tamaño máximo'}), 400
         file.seek(0)
-        filename = secure_filename(file.filename)
+        filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
         upload_path = os.path.join(current_app.root_path, 'static/uploads')
         os.makedirs(upload_path, exist_ok=True)
         file_path = os.path.join(upload_path, filename)
         file.save(file_path)
         imagen_nombre = filename
 
-    # 📝 Crear producto
+    # Crear producto
     nuevo_producto = Producto(
         nombre=data['nombre'].strip(),
         descripcion=data.get('descripcion', '').strip(),
@@ -130,6 +131,7 @@ def crear_producto():
     db.session.add(nuevo_producto)
     db.session.commit()
     logger.info(f"[crear_producto] Producto creado ID={nuevo_producto.id}")
+
     return redirect(url_for('producto.listar_mis_productos'))
 
 
@@ -145,7 +147,7 @@ def listar_mis_productos():
 
 
 # ---------------------------
-# Ver / Editar / Actualizar
+# Ver / Editar / Actualizar producto
 # ---------------------------
 @producto_bp.route('/productos/<int:producto_id>', methods=['GET'])
 @login_required
@@ -164,7 +166,7 @@ def editar_producto(producto_id):
     producto = Producto.query.get_or_404(producto_id)
     if producto.cliente_id != current_user.id:
         return jsonify({'msg': 'No autorizado'}), 403
-    categorias = Categoria.query.all()
+    categorias = Categoria.query.filter_by(cliente_id=current_user.id).all()
     marcas = Marca.query.filter_by(cliente_id=current_user.id).all()
     return render_template('editar_producto.html', producto=producto, categorias=categorias, marcas=marcas)
 
@@ -178,10 +180,10 @@ def actualizar_producto(producto_id):
         return jsonify({'msg': 'No autorizado'}), 403
 
     data = request.form
-    marca_nombre = data.get('marca', '').strip()
+    marca_nombre = data.get('marca_nombre', '').strip()
     categoria_id = data.get('categoria_id')
 
-    # Marca: si no existe, se crea automáticamente
+    # Marca: si no existe, crear automáticamente
     marca = None
     if marca_nombre:
         marca = Marca.query.filter_by(nombre=marca_nombre, cliente_id=current_user.id).first()
@@ -202,7 +204,7 @@ def actualizar_producto(producto_id):
     # Imagen
     file = request.files.get('imagen')
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
         upload_path = os.path.join(current_app.root_path, 'static/uploads')
         os.makedirs(upload_path, exist_ok=True)
         file_path = os.path.join(upload_path, filename)
