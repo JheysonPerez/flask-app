@@ -22,13 +22,13 @@
         <!-- Precio -->
         <div class="mb-3">
             <label for="precio" class="form-label">Precio</label>
-            <input type="number" class="form-control" id="precio" name="precio" step="0.01" required>
+            <input type="number" class="form-control" id="precio" name="precio" step="0.01" min="0" required>
         </div>
 
         <!-- Stock -->
         <div class="mb-3">
             <label for="stock" class="form-label">Stock</label>
-            <input type="number" class="form-control" id="stock" name="stock" required>
+            <input type="number" class="form-control" id="stock" name="stock" min="0" required>
         </div>
 
         <!-- Categoría con autocompletado -->
@@ -41,6 +41,7 @@
                 name="categoria_nombre"
                 list="categoria-list"
                 placeholder="Selecciona o escribe una nueva"
+                autocomplete="off"
                 required>
             <datalist id="categoria-list">
                 {% for categoria in categorias %}
@@ -59,6 +60,7 @@
                 name="marca_nombre"
                 list="marca-list"
                 placeholder="Selecciona o escribe una nueva"
+                autocomplete="off"
                 required>
             <datalist id="marca-list">
                 {% for marca in marcas %}
@@ -74,8 +76,10 @@
         </div>
 
         <!-- Botones -->
-        <button type="submit" class="btn btn-success">Guardar Producto</button>
-        <a href="{{ url_for('cliente_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Guardar Producto</button>
+            <a href="{{ url_for('cliente_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
     </form>
 </div>
 {% endblock %}
