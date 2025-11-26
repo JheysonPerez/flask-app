@@ -1,0 +1,10 @@
+id,usuario_id,accion,entidad,descripcion,fecha
+1,3,crear_producto,producto,Producto creado: Producto de prueba,2025-10-30 09:51:46.690088
+2,3,actualizar_producto,producto,Producto actualizado ID 3: Producto actualizado,2025-10-30 09:51:47.769187
+3,3,borrar_producto,producto,Producto borrado ID 3: Producto actualizado,2025-10-30 09:51:48.831271
+88,5,acceder_formulario_creacion,productos,El usuario accedió al formulario de nuevo producto.,2025-10-31 16:18:25.132752
+116,2,crear_producto,producto,Producto creado: Arbol Navideño,2025-11-10 07:07:03.981767
+117,2,actualizar_producto,producto,Producto actualizado ID 41: Producto actualizado,2025-11-10 07:07:05.034638
+118,2,borrar_producto,producto,Producto borrado ID 41: Producto actualizado,2025-11-10 07:07:06.060399
+119,2,acceder_formulario_creacion,productos,El usuario accedió al formulario de nuevo producto.,2025-11-13 20:52:23.148361
+120,2,acceder_formulario_creacion,productos,El usuario accedió al formulario de nuevo producto.,2025-11-13 20:52:30.884966

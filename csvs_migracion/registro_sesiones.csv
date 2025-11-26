@@ -1,0 +1,2 @@
+id,usuario_id,token_sesion,direccion_ip,agente_usuario,fecha_inicio,fecha_fin,estado
+1,2,09fe7dfd-9212-4634-8a33-7c38b755c9c4,127.0.0.1,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",2025-11-13 16:06:36.081383,2025-11-13 16:09:17.188973,cerrada

@@ -1,0 +1,6 @@
+id,google_id,nombre,email,password_hash,rol,estado
+1,admin-google-id-1,Jheyson Perez,jheysonperezramirez6@gmail.com,,administrador,activo
+2,104103455621551125075,Jheyson Perez Ramirez,jheyson.xcalibur.15@gmail.com,,cliente,activo
+3,test_google_id,Test Cliente,test@cliente.com,,cliente,activo
+4,,Test,denilson0@gmail.com,,cliente,activo
+5,115893737648255036974,yordi salvador,yordisalvador629@gmail.com,,cliente,activo

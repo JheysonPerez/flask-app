@@ -1,0 +1,2 @@
+id,cliente_id,categoria_id,marca_id,nombre,descripcion,precio,stock,imagen_url
+1,2,1,1,Audífonos Gamer,Producto de prueba para Locust,100.00,500,https://via.placeholder.com/150

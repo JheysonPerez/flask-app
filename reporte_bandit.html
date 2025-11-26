@@ -1,0 +1,2719 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+    Bandit Report
+</title>
+
+<style>
+
+html * {
+    font-family: "Arial", sans-serif;
+}
+
+pre {
+    font-family: "Monaco", monospace;
+}
+
+.bordered-box {
+    border: 1px solid black;
+    padding-top:.5em;
+    padding-bottom:.5em;
+    padding-left:1em;
+}
+
+.metrics-box {
+    font-size: 1.1em;
+    line-height: 130%;
+}
+
+.metrics-title {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-bottom: .25em;
+}
+
+.issue-description {
+    font-size: 1.3em;
+    font-weight: 500;
+}
+
+.candidate-issues {
+    margin-left: 2em;
+    border-left: solid 1px; LightGray;
+    padding-left: 5%;
+    margin-top: .2em;
+    margin-bottom: .2em;
+}
+
+.issue-block {
+    border: 1px solid LightGray;
+    padding-left: .5em;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.issue-sev-high {
+    background-color: Pink;
+}
+
+.issue-sev-medium {
+    background-color: NavajoWhite;
+}
+
+.issue-sev-low {
+    background-color: LightCyan;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="metrics">
+    <div class="metrics-box bordered-box">
+        <div class="metrics-title">
+            Metrics:<br>
+        </div>
+        Total lines of code: <span id="loc">7112</span><br>
+        Total lines skipped (#nosec): <span id="nosec">0</span>
+    </div>
+</div>
+
+
+
+
+<br>
+<div id="results">
+    
+<div id="issue-0">
+<div class="issue-block issue-sev-high">
+    <b>flask_debug_true: </b> A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.<br>
+    <b>Test ID:</b> B201<br>
+    <b>Severity: </b>HIGH<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/94.html" target="_blank">CWE-94</a><br>
+    <b>File: </b><a href=".\app\main.py" target="_blank">.\app\main.py</a><br>
+    <b>Line number: </b>235<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b201_flask_debug_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b201_flask_debug_true.html</a><br>
+
+<div class="code">
+<pre>
+234	if __name__ == &#x27;__main__&#x27;:
+235	    app.run(debug=True)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-1">
+<div class="issue-block issue-sev-low">
+    <b>blacklist: </b> Consider possible security implications associated with the subprocess module.<br>
+    <b>Test ID:</b> B404<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>42<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess" target="_blank">https://bandit.readthedocs.io/en/1.8.6/blacklists/blacklist_imports.html#b404-import-subprocess</a><br>
+
+<div class="code">
+<pre>
+41	import shutil
+42	import subprocess
+43	import sys
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-2">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>190<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+189	    if quoted_string.startswith(b&#x27;&quot;&#x27;):
+190	      assert quoted_string.endswith(b&#x27;&quot;&#x27;)
+191	      return PathQuoting._unescape_re.sub(PathQuoting.unescape_sequence,
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-3">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>282<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+281	    &quot;&quot;&quot;
+282	    assert all(p in self.value for p in parents)
+283	    assert commit not in self.value
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-4">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>283<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+282	    assert all(p in self.value for p in parents)
+283	    assert commit not in self.value
+284	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-5">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>303<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+302	    &#x27;&#x27;&#x27;
+303	    assert commit_id in self.value
+304	    assert commit_id not in self.git_hash
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-6">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>304<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+303	    assert commit_id in self.value
+304	    assert commit_id not in self.git_hash
+305	    self.git_hash[commit_id] = githash
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-7">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>309<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+308	    if not self._hash_to_id:
+309	      assert not self._reverse_value
+310	      self._hash_to_id = {v: k for k, v in self.git_hash.items()}
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-8">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>622<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+621	    # Stores the blob&#x27;s data
+622	    assert(type(data) == bytes)
+623	    self.data = data
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-9">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>698<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+697	    if type_ == b&#x27;DELETEALL&#x27;:
+698	      assert filename is None and id_ is None and mode is None
+699	      self.filename = b&#x27;&#x27; # Just so PathQuoting.enquote doesn&#x27;t die
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-10">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>701<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+700	    else:
+701	      assert filename is not None
+702	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-11">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>704<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+703	    if type_ == b&#x27;M&#x27;:
+704	      assert id_ is not None and mode is not None
+705	    elif type_ == b&#x27;D&#x27;:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-12">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>706<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+705	    elif type_ == b&#x27;D&#x27;:
+706	      assert id_ is None and mode is None
+707	    elif type_ == b&#x27;R&#x27;:  # pragma: no cover (now avoid fast-export renames)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-13">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>708<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+707	    elif type_ == b&#x27;R&#x27;:  # pragma: no cover (now avoid fast-export renames)
+708	      assert mode is None
+709	      if id_ is None:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-14">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1195<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+1194	    fields = self._currentline.split()
+1195	    assert fields[0] == b&#x27;data&#x27;
+1196	    size = int(fields[1])
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-15">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1507<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+1506	  def insert(self, obj):
+1507	    assert not obj.dumped
+1508	    obj.dump(self._output)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-16">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1598<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+1597	    else:
+1598	      assert type(args) == list
+1599	      return [decode(x) if type(x)==bytes else x for x in args]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-17">
+<div class="issue-block issue-sev-low">
+    <b>subprocess_without_shell_equals_true: </b> subprocess call - check for execution of untrusted input.<br>
+    <b>Test ID:</b> B603<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1605<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html</a><br>
+
+<div class="code">
+<pre>
+1604	      kwargs[&#x27;cwd&#x27;] = decode(kwargs[&#x27;cwd&#x27;])
+1605	    return subprocess.call(SubprocessWrapper.decodify(*args), **kwargs)
+1606	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-18">
+<div class="issue-block issue-sev-low">
+    <b>subprocess_without_shell_equals_true: </b> subprocess call - check for execution of untrusted input.<br>
+    <b>Test ID:</b> B603<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1611<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html</a><br>
+
+<div class="code">
+<pre>
+1610	      kwargs[&#x27;cwd&#x27;] = decode(kwargs[&#x27;cwd&#x27;])
+1611	    return subprocess.check_output(SubprocessWrapper.decodify(*args), **kwargs)
+1612	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-19">
+<div class="issue-block issue-sev-low">
+    <b>subprocess_without_shell_equals_true: </b> subprocess call - check for execution of untrusted input.<br>
+    <b>Test ID:</b> B603<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1617<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html</a><br>
+
+<div class="code">
+<pre>
+1616	      kwargs[&#x27;cwd&#x27;] = decode(kwargs[&#x27;cwd&#x27;])
+1617	    return subprocess.check_call(SubprocessWrapper.decodify(*args), **kwargs)
+1618	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-20">
+<div class="issue-block issue-sev-low">
+    <b>subprocess_without_shell_equals_true: </b> subprocess call - check for execution of untrusted input.<br>
+    <b>Test ID:</b> B603<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>1623<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b603_subprocess_without_shell_equals_true.html</a><br>
+
+<div class="code">
+<pre>
+1622	      kwargs[&#x27;cwd&#x27;] = decode(kwargs[&#x27;cwd&#x27;])
+1623	    return subprocess.Popen(SubprocessWrapper.decodify(*args), **kwargs)
+1624	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-21">
+<div class="issue-block issue-sev-medium">
+    <b>any_other_function_with_shell_equals_true: </b> Function call with shell=True parameter identified, possible security issue.<br>
+    <b>Test ID:</b> B604<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>2579<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b604_any_other_function_with_shell_equals_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b604_any_other_function_with_shell_equals_true.html</a><br>
+
+<div class="code">
+<pre>
+2578	           &#x27; --date=short -M -t -c --raw --combined-all-paths&#x27;)
+2579	    dtp = subproc.Popen(cmd, shell=True, bufsize=-1, stdout=subprocess.PIPE)
+2580	    f = dtp.stdout
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-22">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>2610<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+2609	          n = 1+max(1, len(parents))
+2610	          assert line.startswith(b&#x27;:&#x27;*(n-1))
+2611	          relevant = line[n-1:-1]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-23">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>2949<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+2948	    except ValueError:
+2949	      assert(line == blobhash+b&quot; missing\n&quot;)
+2950	      return None
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-24">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>2952<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+2951	    size = int(size) # Convert e.g. b&#x27;6283&#x27; to 6283
+2952	    assert(oidtype == b&#x27;blob&#x27;)
+2953	    contents_plus_newline = self._cat_file_process.stdout.read(size+1)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-25">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>2962<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+2961	    size = int(size) # Convert e.g. b&#x27;6283&#x27; to 6283
+2962	    assert(oidtype == b&#x27;blob&#x27;)
+2963	    return size
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-26">
+<div class="issue-block issue-sev-medium">
+    <b>exec_used: </b> Use of exec detected.<br>
+    <b>Test ID:</b> B102<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>3238<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b102_exec_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b102_exec_used.html</a><br>
+
+<div class="code">
+<pre>
+3237	        args = (args, &#x27;_do_not_use_this_var = None&#x27;)
+3238	      exec(&#x27;def callback({}):\n&#x27;.format(&#x27;, &#x27;.join(args))+
+3239	           &#x27;  &#x27;+&#x27;\n  &#x27;.join(bdy.splitlines()), callback_globals, callback_locals)
+3240	      return callback_locals[&#x27;callback&#x27;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-27">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>3534<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+3533	        output if show_debuginfo is True. &#x27;&#x27;&#x27;
+3534	    assert not (run_quietly and show_debuginfo)
+3535	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-28">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>3609<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+3608	
+3609	    assert new_hash is not None
+3610	    return new_hash[0:orig_len]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-29">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>3869<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+3868	        if mod_type == &#x27;filter&#x27; and not wanted:
+3869	          assert match_type in (&#x27;match&#x27;, &#x27;glob&#x27;, &#x27;regex&#x27;)
+3870	          if match_type == &#x27;match&#x27; and filename_matches(path_exp, pathname):
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-30">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>3878<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+3877	          match, repl = path_exp
+3878	          assert match_type in (&#x27;match&#x27;,&#x27;regex&#x27;) # glob was translated to regex
+3879	          if match_type == &#x27;match&#x27; and filename_matches(match, full_pathname):
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-31">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4096<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4095	        if change.type != b&#x27;D&#x27;:
+4096	          assert(change.type == b&#x27;M&#x27;)
+4097	          (filename, mode, blob_id) = \
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-32">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4105<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4104	            # want to remove this branch of the if-elif-else.
+4105	            assert(filename is not None)
+4106	            assert(blob_id is not None)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-33">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4106<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4105	            assert(filename is not None)
+4106	            assert(blob_id is not None)
+4107	            new_change = FileChange(b&#x27;D&#x27;, filename)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-34">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4280<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4279	  def set_output(self, outputRepoFilter):
+4280	    assert outputRepoFilter._output
+4281	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-35">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4346<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4345	      if self._args.state_branch:
+4346	        assert(write_marks)
+4347	        source_marks_file = self._load_marks_file(b&#x27;source-marks&#x27;)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-36">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4725<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4724	        continue
+4725	      assert(usoa == intermediate) # old wasn&#x27;t pruned =&gt; usoa == intermediate
+4726	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-37">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4744<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4743	      new = self._remap_to(intermediate)
+4744	      assert(new is not None)
+4745	      first_changes[old] = new
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-38">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4855<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4854	        and let it finish, thus making a call to &quot;run&quot; feel like a misnomer. &#x27;&#x27;&#x27;
+4855	    assert not self._input
+4856	    assert self._managed_output
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-39">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4856<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4855	    assert not self._input
+4856	    assert self._managed_output
+4857	    self.run()
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-40">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\git-filter-repo.py" target="_blank">.\git-filter-repo.py</a><br>
+    <b>Line number: </b>4894<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+4893	      self._setup_output()
+4894	    assert self._sanity_checks_handled
+4895	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-41">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>26<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+25	                logs_implementados.append(&#x27;logging_main&#x27;)
+26	    except:
+27	        pass
+28	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-42">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>43<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+42	                            logs_implementados.append(&#x27;logs_acciones&#x27;)
+43	                except:
+44	                    continue
+45	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-43">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>75<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+74	
+75	                except:
+76	                    continue
+77	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-44">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>93<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+92	                            funciones.append(file[:-3])
+93	                except:
+94	                    continue
+95	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-45">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>163<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+162	    print(f&quot;Umbral recomendado MAn-1-G: {UMBRAL_MAN_1}&quot;)
+163	    assert X &gt;= UMBRAL_MAN_1, f&quot;MAn-1-G insuficiente: {A}/{B} bitácoras implementadas (X={X:.2f}) &lt; umbral {UMBRAL_MAN_1}&quot;
+164	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-46">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>198<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+197	                            razon = f&quot;(por contenido: {&#x27;, &#x27;.join([kw for kw in [&#x27;print(&#x27;, &#x27;logging.&#x27;, &#x27;diagnostico&#x27;] if kw in contenido_lower])})&quot;
+198	                except:
+199	                    pass
+200	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-47">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>214<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+213	    print(f&quot;Umbral recomendado MAn-2-S: {UMBRAL_MAN_2}&quot;)
+214	    assert X &gt;= UMBRAL_MAN_2, f&quot;MAn-2-S insuficiente: {A}/{B} funciones útiles (X={X:.2f}) &lt; umbral {UMBRAL_MAN_2}&quot;
+215	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-48">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>239<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+238	    print(f&quot;Umbral recomendado MAn-3-S: {UMBRAL_MAN_3}&quot;)
+239	    assert X &gt;= UMBRAL_MAN_3, f&quot;MAn-3-S insuficiente: {A}/{B} funciones implementadas (X={X:.2f}) &lt; umbral {UMBRAL_MAN_3}&quot;
+240	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-49">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_analizabilidad.py" target="_blank">.\test\mantenibilidad\test_analizabilidad.py</a><br>
+    <b>Line number: </b>242<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+241	def test_analizabilidad():
+242	    assert True  # Stub: Prueba básica de analizabilidad
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-50">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>33<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+32	
+33	                except:
+34	                    continue
+35	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-51">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>60<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+59	                        modificaciones.append(file)
+60	                except:
+61	                    continue
+62	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-52">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>89<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+88	
+89	                except:
+90	                    continue
+91	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-53">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>113<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+112	                            elementos_modificados.append(modelo_name)
+113	                except:
+114	                    continue
+115	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-54">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>149<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+148	    print(f&quot;Umbral recomendado MMd-1-G: {UMBRAL_MMD_1}&quot;)
+149	    assert X &lt;= UMBRAL_MMD_1, f&quot;MMd-1-G ineficiente: X={X:.2f} &gt; umbral {UMBRAL_MMD_1} (tiempo real excede esperado)&quot;
+150	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-55">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>177<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+176	    print(f&quot;Umbral recomendado MMd-2-G: {UMBRAL_MMD_2}&quot;)
+177	    assert X &gt;= UMBRAL_MMD_2, f&quot;MMd-2-G inexacta: {A}/{B} modificaciones con incidentes (X={X:.2f}) &lt; umbral {UMBRAL_MMD_2}&quot;
+178	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-56">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>201<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+200	    print(f&quot;Umbral recomendado MMd-3-S: {UMBRAL_MMD_3}&quot;)
+201	    assert X &gt;= UMBRAL_MMD_3, f&quot;MMd-3-S insuficiente: {A}/{B} elementos modificados (X={X:.2f}) &lt; umbral {UMBRAL_MMD_3}&quot;
+202	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-57">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modificabilidad.py" target="_blank">.\test\mantenibilidad\test_modificabilidad.py</a><br>
+    <b>Line number: </b>204<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+203	def test_modificabilidad():
+204	    assert True  # Stub: Prueba básica de modificabilidad
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-58">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modularidad.py" target="_blank">.\test\mantenibilidad\test_modularidad.py</a><br>
+    <b>Line number: </b>92<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+91	                            independientes_detalle[&#x27;modelos&#x27;].append(file[:-3])
+92	                except:
+93	                    continue  
+94	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-59">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modularidad.py" target="_blank">.\test\mantenibilidad\test_modularidad.py</a><br>
+    <b>Line number: </b>166<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+165	
+166	                except:
+167	                    continue
+168	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-60">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modularidad.py" target="_blank">.\test\mantenibilidad\test_modularidad.py</a><br>
+    <b>Line number: </b>200<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+199	    print(f&quot;Umbral recomendado MMo-1-G: {UMBRAL_MMO_1}&quot;)
+200	    assert X &gt;= UMBRAL_MMO_1, f&quot;MMo-1-G insuficiente: {A}/{B} componentes independientes (X={X:.2f}) &lt; umbral {UMBRAL_MMO_1}&quot;
+201	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-61">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modularidad.py" target="_blank">.\test\mantenibilidad\test_modularidad.py</a><br>
+    <b>Line number: </b>223<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+222	    print(f&quot;Umbral recomendado MMo-2-S: {UMBRAL_MMO_2}&quot;)
+223	    assert X &gt;= UMBRAL_MMO_2, f&quot;MMo-2-S insuficiente: {A}/{B} módulos con alta complejidad (X={X:.2f}) &lt; umbral {UMBRAL_MMO_2}&quot;
+224	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-62">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_modularidad.py" target="_blank">.\test\mantenibilidad\test_modularidad.py</a><br>
+    <b>Line number: </b>226<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+225	def test_modularidad():
+226	    assert True  # Stub: Prueba básica de modularidad
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-63">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>32<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+31	                                funciones_prueba.add(match.lower())
+32	                    except:
+33	                        continue
+34	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-64">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>54<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+53	                                pruebas_autonomas.add(file[5:-3])  # Nombre sin &#x27;test_&#x27; y &#x27;.py&#x27;
+54	                    except:
+55	                        continue
+56	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-65">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>75<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+74	                                capacidad_reinicio.add(file[5:-3])
+75	                    except:
+76	                        continue
+77	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-66">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>131<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+130	                                pruebas_dependientes.add(file[5:-3])
+131	                    except:
+132	                        continue
+133	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-67">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>151<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+150	                                pruebas_pausables.add(file[5:-3])
+151	                    except:
+152	                        continue
+153	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-68">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>194<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+193	    print(f&quot;Umbral recomendado MTe-1-G: {UMBRAL_MTE_1}&quot;)
+194	    assert X &gt;= UMBRAL_MTE_1, f&quot;MTe-1-G insuficiente: {A}/{B} funciones implementadas (X={X:.2f}) &lt; umbral {UMBRAL_MTE_1}&quot;
+195	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-69">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>219<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+218	    print(f&quot;Umbral recomendado MTe-2-S: {UMBRAL_MTE_2}&quot;)
+219	    assert X &gt;= UMBRAL_MTE_2, f&quot;MTe-2-S insuficiente: {A}/{B} pruebas autónomas (X={X:.2f}) &lt; umbral {UMBRAL_MTE_2}&quot;
+220	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-70">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_probabilidad.py" target="_blank">.\test\mantenibilidad\test_probabilidad.py</a><br>
+    <b>Line number: </b>244<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+243	    print(f&quot;Umbral recomendado MTe-3-S: {UMBRAL_MTE_3}&quot;)
+244	    assert X &gt;= UMBRAL_MTE_3, f&quot;MTe-3-S insuficiente: {A}/{B} pruebas con reinicio (X={X:.2f}) &lt; umbral {UMBRAL_MTE_3}&quot;
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-71">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>26<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+25	                            detalle[&#x27;modelos&#x27;].append(file[:-3])
+26	                except:
+27	                    continue
+28	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-72">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>51<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+50	                            detalle[&#x27;templates&#x27;].append(file)
+51	                except:
+52	                    continue
+53	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-73">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>66<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+65	                            detalle[&#x27;rutas&#x27;].append(file[:-3])
+66	                except:
+67	                    continue
+68	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-74">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>126<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+125	
+126	                except:
+127	                    continue
+128	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-75">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>158<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+157	    print(f&quot;Umbral recomendado MRe-1-G: {UMBRAL_MRE_1}&quot;)
+158	    assert X &gt;= UMBRAL_MRE_1, f&quot;MRe-1-G insuficiente: {A}/{B} activos reutilizables (X={X:.2f}) &lt; umbral {UMBRAL_MRE_1}&quot;
+159	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-76">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>181<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+180	    print(f&quot;Umbral recomendado MRe-2-S: {UMBRAL_MRE_2}&quot;)
+181	    assert X &gt;= UMBRAL_MRE_2, f&quot;MRe-2-S insuficiente: {A}/{B} módulos conformes (X={X:.2f}) &lt; umbral {UMBRAL_MRE_2}&quot;
+182	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-77">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\mantenibilidad\test_reutilizacion.py" target="_blank">.\test\mantenibilidad\test_reutilizacion.py</a><br>
+    <b>Line number: </b>184<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+183	def test_reutilizacion():
+184	    assert True  # Stub: Prueba básica de reutilización
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-78">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_autenticidad.py" target="_blank">.\test\seguridad\test_autenticidad.py</a><br>
+    <b>Line number: </b>77<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+76	    print(f&quot;Umbral recomendado SAu-1-G: {UMBRAL_SAU_1}&quot;)
+77	    assert X &gt;= UMBRAL_SAU_1, (
+78	        f&quot;SAu-1-G insuficiente: {A}/{B} mecanismos implementados (X={X:.2f}) &lt; umbral {UMBRAL_SAU_1}&quot;
+79	    )
+80	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-79">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_autenticidad.py" target="_blank">.\test\seguridad\test_autenticidad.py</a><br>
+    <b>Line number: </b>151<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+150	        print(&quot;No hay reglas aplicables. Test saltado.&quot;)
+151	        assert True
+152	    else:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-80">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_autenticidad.py" target="_blank">.\test\seguridad\test_autenticidad.py</a><br>
+    <b>Line number: </b>154<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+153	        print(f&quot;Umbral recomendado SAu-2-S: {UMBRAL_SAU_2}&quot;)
+154	        assert X &gt;= UMBRAL_SAU_2, (
+155	            f&quot;SAu-2-S insuficiente: {A}/{B} reglas implementadas (X={X:.2f}) &lt; umbral {UMBRAL_SAU_2}&quot;
+156	        )
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-81">
+<div class="issue-block issue-sev-medium">
+    <b>request_without_timeout: </b> Call to requests without timeout<br>
+    <b>Test ID:</b> B113<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank">CWE-400</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>35<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html</a><br>
+
+<div class="code">
+<pre>
+34	                if metodo == &quot;GET&quot;:
+35	                    r = requests.get(app_url + ruta, allow_redirects=False)
+36	                elif metodo == &quot;POST&quot;:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-82">
+<div class="issue-block issue-sev-medium">
+    <b>request_without_timeout: </b> Call to requests without timeout<br>
+    <b>Test ID:</b> B113<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank">CWE-400</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>37<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html</a><br>
+
+<div class="code">
+<pre>
+36	                elif metodo == &quot;POST&quot;:
+37	                    r = requests.post(app_url + ruta, data={}, allow_redirects=False)
+38	                else:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-83">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>61<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+60	            print(f&quot; - {m} {r} -&gt; {s}&quot;)
+61	    assert X &gt;= 0.8, f&quot;Control de acceso débil ({accesos_no_autorizados}/{total_rutas} accesos indebidos)&quot;
+62	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-84">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>88<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+87	    print(f&quot;Resultado: X = {X:.2f}&quot;)
+88	    assert X &gt;= 0.8, &quot;Menos del 80% de las contraseñas están cifradas correctamente&quot;
+89	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-85">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>131<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+130	                algoritmos.add(&#x27;AES&#x27;)
+131	        except:
+132	            continue
+133	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-86">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>144<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+143	        print(&quot;No se detectaron algoritmos criptográficos. Test saltado.&quot;)
+144	        assert True
+145	        return
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-87">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_confidencialidad.py" target="_blank">.\test\seguridad\test_confidencialidad.py</a><br>
+    <b>Line number: </b>159<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+158	    print(f&quot;Resultado: X = {X:.2f}&quot;)
+159	    assert X == 1.0, &quot;Fortaleza criptográfica no óptima&quot;
+160	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-88">
+<div class="issue-block issue-sev-medium">
+    <b>request_without_timeout: </b> Call to requests without timeout<br>
+    <b>Test ID:</b> B113<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank">CWE-400</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_integridad.py" target="_blank">.\test\seguridad\test_integridad.py</a><br>
+    <b>Line number: </b>36<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b113_request_without_timeout.html</a><br>
+
+<div class="code">
+<pre>
+35	        try:
+36	            r = requests.post(app_url + ruta, data={&quot;campo&quot;: &quot;valor_modificado&quot;}, allow_redirects=False)
+37	            if r.status_code in [200, 201]:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-89">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_integridad.py" target="_blank">.\test\seguridad\test_integridad.py</a><br>
+    <b>Line number: </b>63<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+62	            print(f&quot; - {r} -&gt; status {s}&quot;)
+63	    assert X &gt;= 0.8, f&quot;SIn-1-G: Integridad débil ({modificaciones_no_autorizadas}/{total_rutas} accesos no protegidos)&quot;
+64	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-90">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_integridad.py" target="_blank">.\test\seguridad\test_integridad.py</a><br>
+    <b>Line number: </b>177<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+176	                        return True
+177	        except:
+178	            pass
+179	        return False
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-91">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_integridad.py" target="_blank">.\test\seguridad\test_integridad.py</a><br>
+    <b>Line number: </b>221<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+220	    
+221	    assert X &gt;= 0.5, &quot;SIn-2-G: Pocas medidas internas de integridad implementadas&quot;
+222	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-92">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_integridad.py" target="_blank">.\test\seguridad\test_integridad.py</a><br>
+    <b>Line number: </b>256<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+255	    print(f&quot;Resultado: X = {X:.2f}&quot;)
+256	    assert X &gt;= 0.75, &quot;SIn-3-S: Falta control de límites en campos de entrada&quot;
+257	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-93">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>49<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+48	            db.session.commit()
+49	        except Exception:
+50	            pass
+51	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-94">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>116<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+115	                            eventos.add(f&quot;{name}_{obj.__name__}&quot;)
+116	            except:
+117	                continue
+118	    except:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-95">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>118<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+117	                continue
+118	    except:
+119	        pass
+120	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-96">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>141<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+140	        print(&quot;No se detectaron eventos auditables. Test saltado.&quot;)
+141	        assert True
+142	        return
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-97">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>155<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+154	    print(f&quot;POST /cliente/productos → {resp_create.status_code}&quot;)
+155	    assert resp_create.status_code in [200, 201]
+156	    product_id = resp_create.get_json().get(&quot;id&quot;)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-98">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>157<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+156	    product_id = resp_create.get_json().get(&quot;id&quot;)
+157	    assert product_id is not None
+158	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-99">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>163<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+162	    print(f&quot;PUT /cliente/productos/{product_id} → {resp_update.status_code}&quot;)
+163	    assert resp_update.status_code in [200, 201]
+164	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-100">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>168<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+167	    print(f&quot;DELETE /cliente/productos/{product_id} → {resp_delete.status_code}&quot;)
+168	    assert resp_delete.status_code in [200, 204]
+169	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-101">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>181<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+180	        print(&quot;No hay eventos críticos configurados. Test saltado.&quot;)
+181	        assert True
+182	    else:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-102">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_no_repudio.py" target="_blank">.\test\seguridad\test_no_repudio.py</a><br>
+    <b>Line number: </b>183<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+182	    else:
+183	        assert X &gt;= 0.8, f&quot;No repudio insuficiente: solo {A}/{B} eventos críticos auditados&quot;
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-103">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>27<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+26	            acciones.update(accion[0] for accion in logs)
+27	        except:
+28	            pass
+29	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-104">
+<div class="issue-block issue-sev-low">
+    <b>try_except_continue: </b> Try, Except, Continue detected.<br>
+    <b>Test ID:</b> B112<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>88<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b112_try_except_continue.html</a><br>
+
+<div class="code">
+<pre>
+87	                            eventos.add(f&quot;{name}_{obj.__name__}&quot;)
+88	            except:
+89	                continue
+90	    except:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-105">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>90<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+89	                continue
+90	    except:
+91	        pass
+92	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-106">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>106<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+105	            print(&quot;No se detectaron eventos auditables. Test saltado.&quot;)
+106	            assert True
+107	            return
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-107">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>130<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+129	            print(&quot;No hay eventos críticos configurados. Test saltado.&quot;)
+130	            assert True
+131	        elif X == 1.0:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-108">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>137<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+136	            print(&quot;Riesgo: faltan logs en eventos críticos.&quot;)
+137	        assert X &gt;= 0.8, f&quot;Trazabilidad insuficiente: solo {A}/{B} eventos críticos registrados&quot;
+138	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-109">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>148<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+147	            print(&quot;No hay logs registrados. Test saltado.&quot;)
+148	            assert True
+149	            return
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-110">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>154<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+153	            print(f&quot;Muy pocos días de logs ({dias_retencion}). Test saltado para evitar falsos fallos en desarrollo.&quot;)
+154	            assert True
+155	            return
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-111">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_trazabilidad.py" target="_blank">.\test\seguridad\test_trazabilidad.py</a><br>
+    <b>Line number: </b>166<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+165	            print(&quot;Retención insuficiente de bitácoras (logs recientes).&quot;)
+166	        assert X &gt;= 0.8, f&quot;Retención insuficiente: solo {dias_retencion} días de logs&quot;
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-112">
+<div class="issue-block issue-sev-low">
+    <b>assert_used: </b> Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.<br>
+    <b>Test ID:</b> B101<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href=".\test\seguridad\test_validaciones_datos.py" target="_blank">.\test\seguridad\test_validaciones_datos.py</a><br>
+    <b>Line number: </b>3<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html" target="_blank">https://bandit.readthedocs.io/en/1.8.6/plugins/b101_assert_used.html</a><br>
+
+<div class="code">
+<pre>
+2	def test_validaciones_datos():
+3	    assert True  # Stub simple
+</pre>
+</div>
+
+
+</div>
+</div>
+
+</div>
+
+</body>
+</html>
