@@ -7,12 +7,33 @@
 <div class="container mt-4 position-relative" style="z-index: 1;">
     <h1 class="mb-4">Bienvenido cliente, {{ nombre }}</h1>
 
-    <div class="d-flex gap-3">
-        <a href="{{ url_for('perfil_usuario') }}" class="btn btn-outline-primary">Ver perfil</a>
-        <a href="{{ url_for('producto.nuevo_producto') }}" class="btn btn-outline-success">Agregar Producto</a>
-        <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-outline-info">Mis Productos</a>
-        <a href="{{ url_for('historial_ventas.mostrar_historial_ventas') }}" class="btn btn-outline-warning">Historial de Ventas</a>
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Cerrar sesión</a>
+    <div class="d-flex gap-3 flex-wrap">
+
+        <!-- PERFIL -->
+        <a href="{{ url_for('perfil') }}" class="btn btn-outline-primary">
+            <i class="bi bi-person me-1"></i> Ver perfil
+        </a>
+
+        <!-- PRODUCTOS - CORREGIDO -->
+        <a href="{{ url_for('producto.nuevo_producto') }}" class="btn btn-outline-success">
+            <i class="bi bi-plus-circle me-1"></i> Agregar Producto
+        </a>
+
+        <a href="{{ url_for('producto.listar_mis_productos') }}" class="btn btn-outline-info">
+            <i class="bi bi-box-seam me-1"></i> Mis Productos
+        </a>
+
+        <!-- HISTORIAL DE VENTAS - CORREGIDO -->
+        <a href="{{ url_for('historial_ventas.mostrar_historial_ventas') }}" class="btn btn-outline-warning">
+            <i class="bi bi-clock-history me-1"></i> Historial de Ventas
+        </a>
+
+        <!-- LOGOUT -->
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+            <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+        </a>
+
     </div>
 </div>
+
 {% endblock %}

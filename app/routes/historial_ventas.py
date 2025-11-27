@@ -2,6 +2,7 @@ from flask import Blueprint, request, render_template, jsonify
 from flask_login import login_required, current_user
 from app.models.historial_ventas import HistorialVenta
 from app.models.usuario import Usuario
+from app.models.compra import Compra
 from collections import defaultdict, Counter
 from datetime import datetime
 from app.extensions import db
@@ -22,21 +23,30 @@ if not logger.hasHandlers():
     logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
-
 @historial_ventas_bp.route("/historial_ventas")
 @login_required
 def mostrar_historial_ventas():
     usuario = current_user
+
+    # Verificar si el usuario está activo
     if usuario.estado != "activo":
-        logger.warning(f"[mostrar_historial_ventas] Usuario {usuario.id} inactivo intentó acceder")
         return jsonify({"msg": "Usuario inactivo"}), 403
 
-    historial = HistorialVenta.query.filter_by(cliente_id=usuario.id).all()
-    logger.info(f"[mostrar_historial_ventas] Usuario {usuario.id} visualiza {len(historial)} ventas")
+    # Traer todas las compras del usuario, ordenadas por fecha descendente
+    compras = Compra.query.filter_by(cliente_id=usuario.id).order_by(Compra.fecha.desc()).all()
 
-    return render_template("historial_ventas.html", historial=historial)
+    # Asegurarse de que compra.fecha sea un datetime
+    for compra in compras:
+        if isinstance(compra.fecha, str):
+            try:
+                compra.fecha = datetime.fromisoformat(compra.fecha)
+            except Exception:
+                compra.fecha = None
 
+    # Renderizar plantilla pasando las compras
+    return render_template("historial_ventas.html", compras=compras)
 
+# Para los graficos 
 @dashboard_ventas_bp.route('/dashboard_ventas')
 @login_required
 def dashboard_ventas():

@@ -267,6 +267,62 @@ def ver_carrito():
     return render_template('carrito.html', productos_carrito=productos_carrito, total=total)
 
 
+# ---------------------------------
+# ACTUALIZAR CANTIDAD – MÍNIMO 1, SIN DUPLICADOS
+# ---------------------------------
+@producto_bp.route('/carrito/actualizar/<int:producto_id>', methods=['POST'])
+@login_required
+@validate_active_cliente
+def actualizar_cantidad(producto_id):
+    try:
+        nueva_cantidad = int(request.form.get('cantidad', 1))
+    except (ValueError, TypeError):
+        nueva_cantidad = 1
+
+    if nueva_cantidad < 1:
+        nueva_cantidad = 1
+
+    producto = Producto.query.get_or_404(producto_id)
+    if nueva_cantidad > producto.stock:
+        nueva_cantidad = producto.stock
+
+    carrito = session.get('carrito', {})
+    str_id = str(producto_id)
+    old_cantidad = carrito.get(str_id, 0)
+
+    if old_cantidad != nueva_cantidad:
+        carrito[str_id] = nueva_cantidad
+        session['carrito'] = carrito
+        session.modified = True
+        flash('Cantidad actualizada', 'success')
+
+    from flask import get_flashed_messages
+    get_flashed_messages()  # Evita mensaje fantasma
+
+    return redirect(url_for('producto.ver_carrito'))
+
+
+# ---------------------------------
+# ELIMINAR PRODUCTO
+# ---------------------------------
+@producto_bp.route('/carrito/eliminar/<int:producto_id>', methods=['POST'])
+@login_required
+@validate_active_cliente
+def eliminar_del_carrito(producto_id):
+    carrito = session.get('carrito', {})
+    str_id = str(producto_id)
+
+    if str_id in carrito:
+        del carrito[str_id]
+        session['carrito'] = carrito
+        session.modified = True
+        flash('Producto eliminado del carrito', 'success')
+
+    from flask import get_flashed_messages
+    get_flashed_messages()
+
+    return redirect(url_for('producto.ver_carrito'))
+
 # ---------------------------
 # API pública de productos
 # ---------------------------
